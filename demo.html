@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Pivot Table Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #34495e;
+    }
+
+    select, button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    select {
+      width: 100%;
+      background: white;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 13px;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      text-align: left;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+    }
+
+    tbody th {
+      background-color: #ecf0f1;
+      color: #2c3e50;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    tr:hover {
+      background-color: #e8f4f8;
+    }
+
+    td[align="right"] {
+      text-align: right;
+      font-family: 'Courier New', monospace;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .error {
+      background-color: #e74c3c;
+      color: white;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .info {
+      background-color: #3498db;
+      color: white;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .format-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .format-buttons button {
+      flex: 1;
+    }
+
+    pre {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Interactive Pivot Table Demo</h1>
+
+  <div class="info">
+    <strong>How to use:</strong> Select dimensions for rows and columns, choose a value field and aggregation method, then click "Generate Pivot Table".
+  </div>
+
+  <div class="controls">
+    <div class="grid">
+      <div class="control-group">
+        <label>Row Fields (hold Ctrl/Cmd for multiple):</label>
+        <select id="rowFields" multiple size="6"></select>
+      </div>
+
+      <div class="control-group">
+        <label>Column Fields (hold Ctrl/Cmd for multiple):</label>
+        <select id="columnFields" multiple size="6"></select>
+      </div>
+
+      <div class="control-group">
+        <label>Value Field:</label>
+        <select id="valueField"></select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Aggregation:</label>
+      <select id="aggregation">
+        <option value="sum">Sum</option>
+        <option value="count">Count</option>
+        <option value="average">Average</option>
+        <option value="min">Minimum</option>
+        <option value="max">Maximum</option>
+      </select>
+    </div>
+
+    <button id="generateBtn" onclick="generatePivot()">🔄 Generate Pivot Table</button>
+
+    <div class="format-buttons">
+      <button onclick="exportCsv()">📄 Export CSV</button>
+      <button onclick="exportJson()">📋 Export JSON</button>
+      <button onclick="showConfig()">⚙️ Show Config</button>
+    </div>
+  </div>
+
+  <div id="result" class="result"></div>
+
+  <script src="pivot-table-browser.js"></script>
+  <script>
+    let currentData = null;
+    let currentPivot = null;
+    let currentConfig = null;
+
+    // Load data on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('example.json');
+        currentData = await response.json();
+
+        initializeControls();
+
+        // Set default configuration
+        setDefaultConfig();
+
+        // Generate initial pivot
+        generatePivot();
+      } catch (error) {
+        showError('Failed to load data: ' + error.message);
+      }
+    });
+
+    function initializeControls() {
+      const rowSelect = document.getElementById('rowFields');
+      const colSelect = document.getElementById('columnFields');
+      const valueSelect = document.getElementById('valueField');
+
+      // Populate field selectors
+      currentData.headers.forEach((header, index) => {
+        const type = currentData.types[index];
+
+        // All fields can be rows or columns
+        const rowOption = new Option(header, header);
+        const colOption = new Option(header, header);
+        rowSelect.add(rowOption);
+        colSelect.add(colOption);
+
+        // Only numeric fields can be values
+        if (type === 'number' || type === 'integer') {
+          const valueOption = new Option(header, header);
+          valueSelect.add(valueOption);
+        }
+      });
+    }
+
+    function setDefaultConfig() {
+      // Default: year as columns, revenue as value, country and territory as rows
+      const rowSelect = document.getElementById('rowFields');
+      const colSelect = document.getElementById('columnFields');
+      const valueSelect = document.getElementById('valueField');
+
+      // Select country and territory for rows
+      Array.from(rowSelect.options).forEach(opt => {
+        if (opt.value === 'country' || opt.value === 'territory') {
+          opt.selected = true;
+        }
+      });
+
+      // Select year for columns
+      Array.from(colSelect.options).forEach(opt => {
+        if (opt.value === 'year') {
+          opt.selected = true;
+        }
+      });
+
+      // Select revenue for value
+      valueSelect.value = 'revenue';
+    }
+
+    function generatePivot() {
+      const rowSelect = document.getElementById('rowFields');
+      const colSelect = document.getElementById('columnFields');
+      const valueField = document.getElementById('valueField').value;
+      const aggregation = document.getElementById('aggregation').value;
+
+      const rowFields = Array.from(rowSelect.selectedOptions).map(opt => opt.value);
+      const columnFields = Array.from(colSelect.selectedOptions).map(opt => opt.value);
+
+      if (!valueField) {
+        showError('Please select a value field');
+        return;
+      }
+
+      currentConfig = {
+        rows: rowFields,
+        columns: columnFields,
+        values: [{
+          field: valueField,
+          aggregation: aggregation,
+          label: `${aggregation}(${valueField})`
+        }]
+      };
+
+      try {
+        currentPivot = PivotTable.createPivot(currentData, currentConfig);
+        displayPivot(currentPivot);
+      } catch (error) {
+        showError('Failed to generate pivot: ' + error.message);
+      }
+    }
+
+    function displayPivot(pivot) {
+      const html = PivotTable.pivotToHtml(pivot);
+      document.getElementById('result').innerHTML = html;
+    }
+
+    function exportCsv() {
+      if (!currentPivot) {
+        showError('Generate a pivot table first');
+        return;
+      }
+
+      const csv = PivotTable.pivotToCsv(currentPivot);
+      downloadFile('pivot-table.csv', csv, 'text/csv');
+    }
+
+    function exportJson() {
+      if (!currentPivot) {
+        showError('Generate a pivot table first');
+        return;
+      }
+
+      const json = JSON.stringify(currentPivot, null, 2);
+      downloadFile('pivot-table.json', json, 'application/json');
+    }
+
+    function showConfig() {
+      if (!currentConfig) {
+        showError('Generate a pivot table first');
+        return;
+      }
+
+      const configText = JSON.stringify(currentConfig, null, 2);
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `
+        <h2>Current Configuration</h2>
+        <pre>${escapeHtml(configText)}</pre>
+        <button onclick="generatePivot()">Back to Pivot Table</button>
+      `;
+    }
+
+    function downloadFile(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function showError(message) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${escapeHtml(message)}</div>`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

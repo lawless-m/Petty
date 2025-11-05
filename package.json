@@ -1,0 +1,28 @@
+{
+  "name": "typescript-pivot-table",
+  "version": "1.0.0",
+  "description": "A TypeScript implementation of Excel-like pivot tables with flexible configuration",
+  "main": "dist/pivot-table.js",
+  "types": "dist/pivot-table.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "example": "ts-node src/example.ts",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "pivot",
+    "pivot-table",
+    "typescript",
+    "excel",
+    "data-analysis",
+    "aggregation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}
