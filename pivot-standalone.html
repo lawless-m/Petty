@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pivot Table with Forecasting - Standalone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 { color: #333; margin-bottom: 10px; font-size: 2.5em; }
+        .subtitle { color: #666; margin-bottom: 20px; font-size: 1.1em; }
+        .file-upload {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px dashed #667eea;
+        }
+        .file-upload h3 { margin-bottom: 10px; color: #555; }
+        .file-upload input[type="file"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .control-group label { font-weight: 600; color: #555; font-size: 0.9em; }
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .button-group { display: flex; gap: 10px; grid-column: 1 / -1; }
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert.show { display: block; }
+        .alert-title { font-weight: bold; color: #856404; margin-bottom: 5px; }
+        .alert-body { color: #856404; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+        .stat-card h3 { font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; }
+        .stat-card .value { font-size: 2em; font-weight: bold; }
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .legend-color { width: 30px; height: 20px; border-radius: 4px; }
+        .legend-color.actual { background: white; border: 2px solid #333; }
+        .legend-color.partial { background: #fffacd; border: 2px solid #ffa500; }
+        .legend-color.forecast { background: #fff4e6; border: 2px dashed #ff9800; }
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-height: 600px;
+        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        th, td { padding: 12px; text-align: right; border: 1px solid #e0e0e0; white-space: nowrap; }
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+        }
+        thead th:first-child {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 15;
+        }
+        tbody tr:hover { background-color: #f5f5f5; }
+        tbody tr:hover td:first-child { background-color: #f5f5f5; }
+        .partial-col {
+            background: #fffacd;
+            border-left: 3px solid #ffa500 !important;
+            font-style: italic;
+        }
+        .forecast-col {
+            background: #fff4e6;
+            border-left: 3px dashed #ff9800 !important;
+            font-weight: 600;
+            color: #e65100;
+        }
+        .forecast-header { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important; }
+        .partial-header { background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%) !important; }
+        .total-row {
+            font-weight: bold;
+            background-color: #f0f0f0 !important;
+            border-top: 3px solid #667eea !important;
+        }
+        .total-row td:first-child { background-color: #f0f0f0 !important; }
+        .confidence-interval {
+            font-size: 0.75em;
+            color: #666;
+            display: block;
+            margin-top: 2px;
+        }
+        .loading { text-align: center; padding: 40px; color: #666; font-size: 1.2em; }
+        .number { font-variant-numeric: tabular-nums; }
+        .info-panel {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .info-panel h3 { color: #1976d2; margin-bottom: 10px; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .info-item { background: white; padding: 10px; border-radius: 6px; }
+        .info-label { font-size: 0.85em; color: #666; margin-bottom: 3px; }
+        .info-value { font-size: 1.3em; font-weight: bold; color: #1976d2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Standalone Pivot with Forecasting</h1>
+        <p class="subtitle">Upload your monthly data JSON file or use sample data</p>
+
+        <div class="file-upload">
+            <h3>📂 Data Source</h3>
+            <input type="file" id="fileInput" accept=".json" onchange="loadFile(event)">
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                Or <a href="#" onclick="useSampleData(); return false;" style="color: #667eea; font-weight: bold;">use sample data</a>
+            </p>
+        </div>
+
+        <div class="alert" id="partialAlert">
+            <div class="alert-title">⚠️ Partial Period Detected</div>
+            <div class="alert-body" id="partialAlertText"></div>
+        </div>
+
+        <div class="controls" id="controls" style="display: none;">
+            <div class="control-group">
+                <label for="aggregation">Aggregation Level:</label>
+                <select id="aggregation">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly" selected>Yearly</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="partialHandling">Partial Period Handling:</label>
+                <select id="partialHandling">
+                    <option value="include">Include As-Is</option>
+                    <option value="exclude" selected>Exclude from Forecast</option>
+                    <option value="project">Project to Full Period</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="forecastMethod">Forecasting Method:</label>
+                <select id="forecastMethod">
+                    <option value="linear">Linear Regression</option>
+                    <option value="exponential" selected>Exponential Smoothing</option>
+                    <option value="seasonal">Seasonal Decomposition</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="forecastPeriods">Periods to Forecast:</label>
+                <input type="number" id="forecastPeriods" value="12" min="1" max="36">
+            </div>
+            <div class="control-group">
+                <label for="confidenceLevel">Confidence Level:</label>
+                <select id="confidenceLevel">
+                    <option value="0.80">80%</option>
+                    <option value="0.95" selected>95%</option>
+                    <option value="0.99">99%</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button onclick="generatePivot()">🚀 Generate Pivot & Forecast</button>
+            </div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;"></div>
+        <div class="legend" id="legend" style="display: none;">
+            <div class="legend-item">
+                <div class="legend-color actual"></div>
+                <span>Complete Periods</span>
+            </div>
+            <div class="legend-item" id="partialLegend" style="display: none;">
+                <div class="legend-color partial"></div>
+                <span>Partial Period</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color forecast"></div>
+                <span>Forecasted Data</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="output" class="loading">Upload a JSON file or use sample data to start...</div>
+        </div>
+
+        <div id="info" class="info-panel" style="display: none;">
+            <h3>📊 Forecast Information</h3>
+            <div class="info-grid" id="infoGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // EMBEDDED SAMPLE DATA - Replace with your own data
+        const SAMPLE_DATA = null; // Will be loaded dynamically
+
+        let rawData = null;
+        let pivotData = null;
+
+        // Load file from input
+        function loadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        rawData = JSON.parse(e.target.result);
+                        document.getElementById('controls').style.display = 'grid';
+                        document.getElementById('output').innerHTML = '<div class="loading">Data loaded! Click "Generate Pivot & Forecast" to start...</div>';
+                    } catch (error) {
+                        document.getElementById('output').innerHTML = '<div class="loading" style="color: red;">Error parsing JSON file: ' + error.message + '</div>';
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Use sample data
+        function useSampleData() {
+            // Generate minimal sample data
+            rawData = generateSampleData();
+            document.getElementById('controls').style.display = 'grid';
+            document.getElementById('output').innerHTML = '<div class="loading">Sample data loaded! Click "Generate Pivot & Forecast" to start...</div>';
+        }
+
+        // Generate sample data
+        function generateSampleData() {
+            const territories = ['North America', 'Europe', 'Asia', 'Latin America'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const rows = [];
+
+            territories.forEach((territory, tidx) => {
+                const baseRevenue = 50000 + tidx * 20000;
+
+                for (let year = 2015; year <= 2018; year++) {
+                    const maxMonth = year === 2018 ? 8 : 12; // Partial 2018
+
+                    for (let month = 1; month <= maxMonth; month++) {
+                        const growth = Math.pow(1.1, year - 2015); // 10% annual growth
+                        const seasonal = 1 + Math.sin(month / 12 * Math.PI * 2) * 0.2; // Seasonality
+                        const noise = 0.9 + Math.random() * 0.2;
+                        const revenue = Math.round(baseRevenue * growth * seasonal * noise / 12);
+
+                        rows.push([
+                            `ACC${tidx}`,
+                            `Company ${tidx}`,
+                            'Country',
+                            territory,
+                            `${year}-${String(month).padStart(2, '0')}`,
+                            `${months[month-1]} ${year}`,
+                            year,
+                            month,
+                            revenue
+                        ]);
+                    }
+                }
+            });
+
+            return {
+                headers: ["acc_code", "cpyname", "country", "territory", "year_month", "month_name", "year", "month", "revenue"],
+                types: ["string", "string", "string", "string", "string", "string", "integer", "integer", "number"],
+                rows: rows
+            };
+        }
+
+        // Rest of the forecasting code (from pivot-forecast-monthly.html)
+        function detectPartialPeriod(data, aggregation) {
+            const rows = data.rows;
+            const periodCounts = new Map();
+            rows.forEach(row => {
+                const yearMonth = row[4];
+                const [year, month] = yearMonth.split('-').map(Number);
+                let period;
+                switch(aggregation) {
+                    case 'monthly': period = yearMonth; break;
+                    case 'quarterly': period = `${year}-Q${Math.ceil(month / 3)}`; break;
+                    case 'yearly': period = year.toString(); break;
+                }
+                periodCounts.set(period, (periodCounts.get(period) || 0) + 1);
+            });
+
+            const periods = Array.from(periodCounts.keys()).sort();
+            const lastPeriod = periods[periods.length - 1];
+            const lastCount = periodCounts.get(lastPeriod);
+            const counts = Array.from(periodCounts.values());
+            const avgCount = counts.slice(0, -1).reduce((a, b) => a + b, 0) / (counts.length - 1);
+            const isPartial = lastCount < avgCount * 0.9;
+
+            return { isPartial, lastPeriod, lastCount, avgCount: Math.round(avgCount), completeness: (lastCount / avgCount * 100).toFixed(0) };
+        }
+
+        function aggregateData(data, level) {
+            const rows = data.rows;
+            const aggregated = new Map();
+
+            rows.forEach(row => {
+                const [acc_code, cpyname, country, territory, yearMonth, monthName, year, month, revenue] = row;
+                let period, periodLabel;
+
+                switch(level) {
+                    case 'monthly':
+                        period = yearMonth;
+                        periodLabel = monthName;
+                        break;
+                    case 'quarterly':
+                        const quarter = Math.ceil(month / 3);
+                        period = `${year}-Q${quarter}`;
+                        periodLabel = `Q${quarter} ${year}`;
+                        break;
+                    case 'yearly':
+                        period = year.toString();
+                        periodLabel = year.toString();
+                        break;
+                }
+
+                const key = `${territory}|${period}`;
+                if (!aggregated.has(key)) {
+                    aggregated.set(key, {territory, period, periodLabel, revenue: 0});
+                }
+                aggregated.get(key).revenue += revenue;
+            });
+
+            return Array.from(aggregated.values());
+        }
+
+        class Forecaster {
+            static linearRegression(values) {
+                const n = values.length;
+                const x = Array.from({length: n}, (_, i) => i);
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = values.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * values[i], 0);
+                const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+                return {slope, intercept};
+            }
+
+            static exponentialSmoothing(values, alpha = 0.3) {
+                if (values.length === 0) return [];
+                const smoothed = [values[0]];
+                for (let i = 1; i < values.length; i++) {
+                    smoothed.push(alpha * values[i] + (1 - alpha) * smoothed[i - 1]);
+                }
+                const trend = values.length > 1 ? (values[values.length - 1] - values[0]) / (values.length - 1) : 0;
+                return {smoothed, trend, lastValue: smoothed[smoothed.length - 1]};
+            }
+
+            static detectSeasonality(values) {
+                if (values.length < 12) return null;
+                const seasonalFactors = [];
+                const cycleLength = 12;
+                for (let i = 0; i < cycleLength; i++) {
+                    const positions = [];
+                    for (let j = i; j < values.length; j += cycleLength) {
+                        positions.push(values[j]);
+                    }
+                    const avg = positions.reduce((a, b) => a + b, 0) / positions.length;
+                    seasonalFactors.push(avg);
+                }
+                const overallAvg = values.reduce((a, b) => a + b, 0) / values.length;
+                return seasonalFactors.map(f => f / overallAvg);
+            }
+
+            static forecast(values, method, periods = 12) {
+                if (values.length === 0) return [];
+                const forecasts = [];
+                let seasonal = method === 'seasonal' ? this.detectSeasonality(values) : null;
+
+                switch(method) {
+                    case 'linear': {
+                        const {slope, intercept} = this.linearRegression(values);
+                        const n = values.length;
+                        for (let i = 0; i < periods; i++) {
+                            forecasts.push(Math.max(0, slope * (n + i) + intercept));
+                        }
+                        break;
+                    }
+                    case 'exponential': {
+                        const {trend, lastValue} = this.exponentialSmoothing(values);
+                        let forecast = lastValue;
+                        for (let i = 0; i < periods; i++) {
+                            forecast = forecast + trend;
+                            forecasts.push(Math.max(0, forecast));
+                        }
+                        break;
+                    }
+                    case 'seasonal': {
+                        const {trend, lastValue} = this.exponentialSmoothing(values);
+                        let forecast = lastValue;
+                        for (let i = 0; i < periods; i++) {
+                            forecast = forecast + trend;
+                            if (seasonal) {
+                                const seasonalIndex = (values.length + i) % seasonal.length;
+                                forecast = forecast * seasonal[seasonalIndex];
+                            }
+                            forecasts.push(Math.max(0, forecast));
+                        }
+                        break;
+                    }
+                }
+                return forecasts;
+            }
+
+            static calculateConfidenceInterval(values, forecast, confidenceLevel) {
+                const mean = values.reduce((a, b) => a + b, 0) / values.length;
+                const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+                const stdDev = Math.sqrt(variance);
+                const zScores = {0.80: 1.28, 0.90: 1.645, 0.95: 1.96, 0.99: 2.576};
+                const z = zScores[confidenceLevel] || 1.96;
+                const margin = z * stdDev;
+                return { lower: Math.max(0, forecast - margin), upper: forecast + margin };
+            }
+        }
+
+        function createPivot(data, aggregation, partialHandling, forecastPeriods, method, confidenceLevel) {
+            const aggregated = aggregateData(data, aggregation);
+            const partialInfo = detectPartialPeriod(data, aggregation);
+            const territoryMap = new Map();
+
+            aggregated.forEach(item => {
+                const {territory, period, periodLabel, revenue} = item;
+                if (!territoryMap.has(territory)) {
+                    territoryMap.set(territory, new Map());
+                }
+                territoryMap.get(territory).set(period, {revenue, periodLabel});
+            });
+
+            const allPeriods = new Set();
+            territoryMap.forEach(periodMap => {
+                periodMap.forEach((_, period) => allPeriods.add(period));
+            });
+            const periods = Array.from(allPeriods).sort();
+
+            let forecastBasePeriods = [...periods];
+            let partialPeriod = null;
+
+            if (partialInfo.isPartial) {
+                partialPeriod = partialInfo.lastPeriod;
+                if (partialHandling === 'exclude') {
+                    forecastBasePeriods = periods.slice(0, -1);
+                } else if (partialHandling === 'project') {
+                    const projectionFactor = 1 / (partialInfo.lastCount / partialInfo.avgCount);
+                    territoryMap.forEach(periodMap => {
+                        if (periodMap.has(partialPeriod)) {
+                            const data = periodMap.get(partialPeriod);
+                            data.revenue = Math.round(data.revenue * projectionFactor);
+                            data.projected = true;
+                        }
+                    });
+                }
+            }
+
+            const pivot = {
+                territories: Array.from(territoryMap.keys()).sort(),
+                periods: periods,
+                forecastBasePeriods: forecastBasePeriods,
+                data: new Map(),
+                forecasts: new Map(),
+                confidenceIntervals: new Map(),
+                partialInfo: partialInfo,
+                partialPeriod: partialPeriod
+            };
+
+            const lastPeriod = forecastBasePeriods[forecastBasePeriods.length - 1];
+            const forecastPeriodLabels = [];
+
+            for (let i = 1; i <= forecastPeriods; i++) {
+                if (aggregation === 'yearly') {
+                    forecastPeriodLabels.push((parseInt(lastPeriod) + i).toString());
+                } else if (aggregation === 'quarterly') {
+                    const [year, q] = lastPeriod.split('-Q');
+                    let newYear = parseInt(year);
+                    let newQ = parseInt(q) + i;
+                    while (newQ > 4) { newQ -= 4; newYear += 1; }
+                    forecastPeriodLabels.push(`${newYear}-Q${newQ}`);
+                } else {
+                    const [year, month] = lastPeriod.split('-').map(Number);
+                    let newYear = year;
+                    let newMonth = month + i;
+                    while (newMonth > 12) { newMonth -= 12; newYear += 1; }
+                    forecastPeriodLabels.push(`${newYear}-${String(newMonth).padStart(2, '0')}`);
+                }
+            }
+
+            pivot.forecastPeriods = forecastPeriodLabels;
+
+            pivot.territories.forEach(territory => {
+                const periodMap = territoryMap.get(territory);
+                const actualValues = forecastBasePeriods.map(p => periodMap.has(p) ? periodMap.get(p).revenue : 0);
+                const allData = periods.map(p => periodMap.has(p) ? periodMap.get(p) : {revenue: 0, periodLabel: p});
+                pivot.data.set(territory, allData);
+                const forecastValues = Forecaster.forecast(actualValues, method, forecastPeriods);
+                pivot.forecasts.set(territory, forecastValues);
+                const intervals = forecastValues.map(forecast =>
+                    Forecaster.calculateConfidenceInterval(actualValues, forecast, confidenceLevel)
+                );
+                pivot.confidenceIntervals.set(territory, intervals);
+            });
+
+            return pivot;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function renderPivot(pivot) {
+            const {territories, periods, forecastPeriods, data, forecasts, confidenceIntervals, partialPeriod} = pivot;
+
+            let html = '<table><thead><tr><th>Territory</th>';
+
+            periods.forEach(period => {
+                const isPartial = period === partialPeriod;
+                const headerClass = isPartial ? 'partial-header' : '';
+                const periodData = data.get(territories[0]);
+                const idx = periods.indexOf(period);
+                const label = periodData[idx].periodLabel || period;
+                html += `<th class="${headerClass}">${label}${isPartial ? ' *' : ''}</th>`;
+            });
+
+            forecastPeriods.forEach(period => {
+                html += `<th class="forecast-header">📈 ${period}</th>`;
+            });
+
+            html += '</tr></thead><tbody>';
+
+            territories.forEach(territory => {
+                html += '<tr><td>' + territory + '</td>';
+                const periodData = data.get(territory);
+                periodData.forEach((item, idx) => {
+                    const isPartial = periods[idx] === partialPeriod;
+                    const colClass = isPartial ? 'partial-col' : '';
+                    html += `<td class="number ${colClass}">${formatCurrency(item.revenue)}</td>`;
+                });
+
+                const forecastValues = forecasts.get(territory);
+                const intervals = confidenceIntervals.get(territory);
+                forecastValues.forEach((value, idx) => {
+                    const interval = intervals[idx];
+                    html += `<td class="forecast-col number">${formatCurrency(value)}<span class="confidence-interval">±${formatCurrency((interval.upper - interval.lower) / 2)}</span></td>`;
+                });
+
+                html += '</tr>';
+            });
+
+            html += '<tr class="total-row"><td>TOTAL</td>';
+            periods.forEach((period, idx) => {
+                const total = territories.reduce((sum, territory) => sum + data.get(territory)[idx].revenue, 0);
+                const isPartial = period === partialPeriod;
+                const colClass = isPartial ? 'partial-col' : '';
+                html += `<td class="number ${colClass}">${formatCurrency(total)}</td>`;
+            });
+
+            forecastPeriods.forEach((period, idx) => {
+                const total = territories.reduce((sum, territory) => sum + forecasts.get(territory)[idx], 0);
+                html += `<td class="forecast-col number">${formatCurrency(total)}</td>`;
+            });
+
+            html += '</tr></tbody></table>';
+            return html;
+        }
+
+        function generateStats(pivot) {
+            const {territories, periods, forecastPeriods, data, forecasts, partialPeriod} = pivot;
+            const completePeriods = partialPeriod ? periods.filter(p => p !== partialPeriod) : periods;
+
+            const totalActual = territories.reduce((sum, territory) => {
+                const periodData = data.get(territory);
+                return sum + completePeriods.reduce((s, p, idx) => {
+                    return s + (periods[idx] === p ? periodData[idx].revenue : 0);
+                }, 0);
+            }, 0);
+
+            const totalForecast = territories.reduce((sum, territory) => {
+                return sum + forecasts.get(territory).reduce((a, b) => a + b, 0);
+            }, 0);
+
+            return [
+                {label: 'Territories', value: territories.length},
+                {label: 'Complete Periods', value: completePeriods.length},
+                {label: 'Historical Revenue', value: formatCurrency(totalActual)},
+                {label: 'Forecasted Revenue', value: formatCurrency(totalForecast)}
+            ];
+        }
+
+        function generatePivot() {
+            if (!rawData) {
+                document.getElementById('output').innerHTML = '<div class="loading" style="color: red;">Please load data first!</div>';
+                return;
+            }
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<div class="loading">Generating forecasts...</div>';
+
+            try {
+                const aggregation = document.getElementById('aggregation').value;
+                const partialHandling = document.getElementById('partialHandling').value;
+                const forecastPeriods = parseInt(document.getElementById('forecastPeriods').value);
+                const method = document.getElementById('forecastMethod').value;
+                const confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+
+                pivotData = createPivot(rawData, aggregation, partialHandling, forecastPeriods, method, confidenceLevel);
+
+                if (pivotData.partialInfo.isPartial) {
+                    const alert = document.getElementById('partialAlert');
+                    const alertText = document.getElementById('partialAlertText');
+                    alertText.textContent = `Last period (${pivotData.partialInfo.lastPeriod}) appears to be partial (${pivotData.partialInfo.completeness}% complete). Currently handling: ${partialHandling}.`;
+                    alert.classList.add('show');
+                    document.getElementById('partialLegend').style.display = 'flex';
+                } else {
+                    document.getElementById('partialAlert').classList.remove('show');
+                    document.getElementById('partialLegend').style.display = 'none';
+                }
+
+                outputDiv.innerHTML = renderPivot(pivotData);
+
+                const stats = generateStats(pivotData);
+                const statsDiv = document.getElementById('stats');
+                statsDiv.style.display = 'grid';
+                statsDiv.innerHTML = stats.map(stat => `
+                    <div class="stat-card">
+                        <h3>${stat.label}</h3>
+                        <div class="value">${stat.value}</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('legend').style.display = 'flex';
+                document.getElementById('info').style.display = 'block';
+                const infoDiv = document.getElementById('infoGrid');
+                infoDiv.innerHTML = `
+                    <div class="info-item"><div class="info-label">Algorithm</div><div class="info-value">${method.charAt(0).toUpperCase() + method.slice(1)}</div></div>
+                    <div class="info-item"><div class="info-label">Aggregation</div><div class="info-value">${aggregation.charAt(0).toUpperCase() + aggregation.slice(1)}</div></div>
+                    <div class="info-item"><div class="info-label">Confidence</div><div class="info-value">${(confidenceLevel * 100).toFixed(0)}%</div></div>
+                    <div class="info-item"><div class="info-label">Forecast Periods</div><div class="info-value">${forecastPeriods}</div></div>
+                    <div class="info-item"><div class="info-label">Data Points</div><div class="info-value">${rawData.rows.length}</div></div>
+                    <div class="info-item"><div class="info-label">Partial Handling</div><div class="info-value">${partialHandling.charAt(0).toUpperCase() + partialHandling.slice(1)}</div></div>
+                `;
+
+            } catch (error) {
+                outputDiv.innerHTML = `<div class="loading" style="color: red;">Error: ${error.message}</div>`;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
