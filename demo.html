@@ -173,10 +173,21 @@
       margin-top: 15px;
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .format-buttons button {
       flex: 1;
+      min-width: 120px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-btn {
+      display: inline-block;
+      cursor: pointer;
     }
 
     pre {
@@ -238,6 +249,11 @@
       <button onclick="exportCsv()">📄 Export CSV</button>
       <button onclick="exportJson()">📋 Export JSON</button>
       <button onclick="showConfig()">⚙️ Show Config</button>
+      <button onclick="downloadSettings()">💾 Save Settings</button>
+      <label for="settingsFile" class="file-upload-btn">
+        <button type="button" onclick="document.getElementById('settingsFile').click()">📂 Load Settings</button>
+      </label>
+      <input type="file" id="settingsFile" accept=".json" onchange="loadSettings(event)">
     </div>
   </div>
 
@@ -466,6 +482,128 @@
     function showSuccess(message) {
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = `<div style="background-color: #27ae60; color: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><strong>✓ Success:</strong> ${escapeHtml(message)}</div>`;
+    }
+
+    function downloadSettings() {
+      const rowSelect = document.getElementById('rowFields');
+      const colSelect = document.getElementById('columnFields');
+      const valueField = document.getElementById('valueField').value;
+      const aggregation = document.getElementById('aggregation').value;
+      const dataUrl = document.getElementById('dataUrl').value;
+
+      const settings = {
+        version: '1.0',
+        dataUrl: dataUrl,
+        configuration: {
+          rows: Array.from(rowSelect.selectedOptions).map(opt => opt.value),
+          columns: Array.from(colSelect.selectedOptions).map(opt => opt.value),
+          valueField: valueField,
+          aggregation: aggregation
+        },
+        timestamp: new Date().toISOString(),
+        description: 'Pivot table settings export'
+      };
+
+      const json = JSON.stringify(settings, null, 2);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      downloadFile(`pivot-settings-${timestamp}.json`, json, 'application/json');
+
+      showInfo('Settings downloaded successfully! You can load them later using "Load Settings".');
+      setTimeout(() => {
+        if (currentPivot) {
+          displayPivot(currentPivot);
+        }
+      }, 2000);
+    }
+
+    async function loadSettings(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+
+      try {
+        const text = await file.text();
+        const settings = JSON.parse(text);
+
+        // Validate settings format
+        if (!settings.version || !settings.dataUrl || !settings.configuration) {
+          throw new Error('Invalid settings file format');
+        }
+
+        showInfo('Loading settings...');
+
+        // Set data URL
+        document.getElementById('dataUrl').value = settings.dataUrl;
+
+        // Load the data first
+        await loadData();
+
+        // Wait a bit for the controls to be populated
+        setTimeout(() => {
+          try {
+            // Apply configuration
+            const rowSelect = document.getElementById('rowFields');
+            const colSelect = document.getElementById('columnFields');
+            const valueSelect = document.getElementById('valueField');
+            const aggregationSelect = document.getElementById('aggregation');
+
+            // Clear all selections
+            Array.from(rowSelect.options).forEach(opt => opt.selected = false);
+            Array.from(colSelect.options).forEach(opt => opt.selected = false);
+
+            // Set row fields
+            if (settings.configuration.rows) {
+              settings.configuration.rows.forEach(rowField => {
+                Array.from(rowSelect.options).forEach(opt => {
+                  if (opt.value === rowField) {
+                    opt.selected = true;
+                  }
+                });
+              });
+            }
+
+            // Set column fields
+            if (settings.configuration.columns) {
+              settings.configuration.columns.forEach(colField => {
+                Array.from(colSelect.options).forEach(opt => {
+                  if (opt.value === colField) {
+                    opt.selected = true;
+                  }
+                });
+              });
+            }
+
+            // Set value field
+            if (settings.configuration.valueField) {
+              valueSelect.value = settings.configuration.valueField;
+            }
+
+            // Set aggregation
+            if (settings.configuration.aggregation) {
+              aggregationSelect.value = settings.configuration.aggregation;
+            }
+
+            // Generate pivot with loaded settings
+            generatePivot();
+
+            showSuccess('Settings loaded and applied successfully!');
+            setTimeout(() => {
+              if (currentPivot) {
+                displayPivot(currentPivot);
+              }
+            }, 2000);
+          } catch (error) {
+            showError('Failed to apply settings: ' + error.message);
+          }
+        }, 500);
+
+      } catch (error) {
+        showError('Failed to load settings: ' + error.message);
+      }
+
+      // Reset file input
+      event.target.value = '';
     }
 
     function escapeHtml(text) {

@@ -220,19 +220,30 @@ This runs the examples in `src/example.ts` and generates:
 
 Simply open `demo.html` in your browser. The demo features:
 
-1. **Interactive Configuration**
+1. **Data Loading**
+   - Enter any URL to load data from custom sources
+   - Default loads from `example.json`
+   - Validates data format automatically
+
+2. **Interactive Configuration**
    - Select row fields (multi-select)
    - Select column fields (multi-select)
    - Choose value field and aggregation
+   - Smart defaults based on field names
 
-2. **Live Updates**
+3. **Live Updates**
    - Click "Generate Pivot Table" to update
    - Changes reflect immediately
 
-3. **Export Options**
-   - Export CSV
-   - Export JSON
-   - View configuration
+4. **Export Options**
+   - Export CSV - Download pivot table as CSV
+   - Export JSON - Download raw pivot data as JSON
+   - View configuration - See current pivot settings
+
+5. **Settings Management**
+   - Save Settings - Download complete configuration including data URL, field selections, and aggregation
+   - Load Settings - Upload previously saved settings to restore exact configuration
+   - Settings include timestamp and are portable across sessions
 
 ## Browser Usage
 
@@ -287,6 +298,33 @@ const objects = [
 const dataset = objectsToDataset(objects);
 const pivot = createPivot(dataset, config);
 ```
+
+## Settings File Format
+
+When you use "Save Settings" in the browser demo, it creates a JSON file with this structure:
+
+```json
+{
+  "version": "1.0",
+  "dataUrl": "example.json",
+  "configuration": {
+    "rows": ["country", "territory"],
+    "columns": ["year"],
+    "valueField": "revenue",
+    "aggregation": "sum"
+  },
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "description": "Pivot table settings export"
+}
+```
+
+This settings file includes:
+- **dataUrl** - The URL where the data is loaded from
+- **configuration** - Complete pivot configuration (rows, columns, value field, aggregation)
+- **timestamp** - When the settings were saved
+- **version** - Settings file format version
+
+You can share these settings files with others or use them to quickly recreate pivot tables across sessions.
 
 ## Performance Considerations
 
