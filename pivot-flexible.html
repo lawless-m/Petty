@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexible Pivot with Forecasting</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 { color: #333; margin-bottom: 10px; font-size: 2.5em; }
+        .subtitle { color: #666; margin-bottom: 20px; font-size: 1.1em; }
+        .data-source {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+        .data-source h3 { margin-bottom: 15px; color: #555; }
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .url-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .url-input-group button {
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .field-mapping {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #ffc107;
+            display: none;
+        }
+        .field-mapping.show { display: block; }
+        .field-mapping h3 { margin-bottom: 15px; color: #856404; }
+        .mapping-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .mapping-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .mapping-item label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+        .mapping-item .help-text {
+            font-size: 0.8em;
+            color: #666;
+            font-style: italic;
+        }
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .controls.show { display: block; }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .control-group label { font-weight: 600; color: #555; font-size: 0.9em; }
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .button-group { display: flex; gap: 10px; margin-top: 15px; }
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .alert.show { display: block; }
+        .alert.error { background: #f8d7da; border: 2px solid #dc3545; }
+        .alert.warning { background: #fff3cd; border: 2px solid #ffc107; }
+        .alert.success { background: #d4edda; border: 2px solid #28a745; }
+        .alert-title { font-weight: bold; margin-bottom: 5px; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .stats.show { display: grid; }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+        .stat-card h3 { font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; }
+        .stat-card .value { font-size: 2em; font-weight: bold; }
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            display: none;
+        }
+        .legend.show { display: flex; }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .legend-color { width: 30px; height: 20px; border-radius: 4px; }
+        .legend-color.actual { background: white; border: 2px solid #333; }
+        .legend-color.partial { background: #fffacd; border: 2px solid #ffa500; }
+        .legend-color.forecast { background: #fff4e6; border: 2px dashed #ff9800; }
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-height: 600px;
+        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        th, td { padding: 12px; text-align: right; border: 1px solid #e0e0e0; white-space: nowrap; }
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+        }
+        thead th:first-child {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 15;
+        }
+        tbody tr:hover { background-color: #f5f5f5; }
+        tbody tr:hover td:first-child { background-color: #f5f5f5; }
+        .partial-col { background: #fffacd; border-left: 3px solid #ffa500 !important; font-style: italic; }
+        .forecast-col { background: #fff4e6; border-left: 3px dashed #ff9800 !important; font-weight: 600; color: #e65100; }
+        .forecast-header { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important; }
+        .partial-header { background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%) !important; }
+        .total-row { font-weight: bold; background-color: #f0f0f0 !important; border-top: 3px solid #667eea !important; }
+        .total-row td:first-child { background-color: #f0f0f0 !important; }
+        .confidence-interval { font-size: 0.75em; color: #666; display: block; margin-top: 2px; }
+        .loading { text-align: center; padding: 40px; color: #666; font-size: 1.2em; }
+        .number { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Flexible Pivot with Forecasting</h1>
+        <p class="subtitle">Map your own fields - no required field names!</p>
+
+        <div class="data-source">
+            <h3>📡 Step 1: Load Your Data</h3>
+            <div class="url-input-group">
+                <input type="text" id="dataUrl" placeholder="Enter data URL or use sample data" value="">
+                <button onclick="loadDataFromUrl()">📥 Load from URL</button>
+                <button onclick="useSampleData()">🎲 Sample Data</button>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                <button onclick="saveConfiguration()" style="background: #28a745;">💾 Save Config</button>
+                <button onclick="document.getElementById('configFile').click()" style="background: #17a2b8;">📂 Load Config</button>
+                <input type="file" id="configFile" accept=".json" style="display: none;" onchange="loadConfiguration(event)">
+                <span style="color: #666; font-size: 0.9em; margin-left: 10px;">Save/load field mappings & settings</span>
+            </div>
+            <div style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                Your data can have ANY field names - you'll map them in the next step
+            </div>
+        </div>
+
+        <div class="alert" id="errorAlert">
+            <div class="alert-title">❌ Error</div>
+            <div class="alert-body" id="errorText"></div>
+        </div>
+
+        <div class="alert success" id="successAlert">
+            <div class="alert-title">✅ Success</div>
+            <div class="alert-body" id="successText"></div>
+        </div>
+
+        <div class="field-mapping" id="fieldMapping">
+            <h3>🗺️ Step 2: Map Your Fields</h3>
+            <div class="mapping-grid">
+                <div class="mapping-item">
+                    <label>Row Dimension (Group By) *</label>
+                    <select id="dimensionField"></select>
+                    <span class="help-text">Which field to group rows by? (e.g., territory, region, category)</span>
+                </div>
+                <div class="mapping-item">
+                    <label>Time Period Field *</label>
+                    <select id="periodField"></select>
+                    <span class="help-text">Which field contains dates/periods? (e.g., month, date, period)</span>
+                </div>
+                <div class="mapping-item">
+                    <label>Value Field (Measure) *</label>
+                    <select id="valueField"></select>
+                    <span class="help-text">Which field to aggregate? (e.g., revenue, sales, amount)</span>
+                </div>
+                <div class="mapping-item">
+                    <label>Period Format</label>
+                    <select id="periodFormat">
+                        <option value="YYYY-MM">YYYY-MM (2024-01)</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD (2024-01-15)</option>
+                        <option value="auto">Auto-detect</option>
+                    </select>
+                    <span class="help-text">Format of your time period field</span>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="applyMapping()">✅ Apply Mapping & Continue</button>
+            </div>
+        </div>
+
+        <div class="alert warning" id="partialAlert">
+            <div class="alert-title">⚠️ Partial Period Detected</div>
+            <div class="alert-body" id="partialText"></div>
+        </div>
+
+        <div class="controls" id="controls">
+            <h3 style="margin-bottom: 15px; color: #555;">⚙️ Step 3: Configure Forecast</h3>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="aggregation">Aggregation Level:</label>
+                    <select id="aggregation">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly" selected>Yearly</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="partialHandling">Partial Period Handling:</label>
+                    <select id="partialHandling">
+                        <option value="include">Include As-Is</option>
+                        <option value="exclude" selected>Exclude from Forecast</option>
+                        <option value="project">Project to Full Period</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="forecastMethod">Forecasting Method:</label>
+                    <select id="forecastMethod">
+                        <option value="linear">Linear Regression</option>
+                        <option value="exponential" selected>Exponential Smoothing</option>
+                        <option value="seasonal">Seasonal Decomposition</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="forecastPeriods">Periods to Forecast:</label>
+                    <input type="number" id="forecastPeriods" value="12" min="1" max="36">
+                </div>
+                <div class="control-group">
+                    <label for="confidenceLevel">Confidence Level:</label>
+                    <select id="confidenceLevel">
+                        <option value="0.80">80%</option>
+                        <option value="0.95" selected>95%</option>
+                        <option value="0.99">99%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="generatePivot()">🚀 Generate Pivot & Forecast</button>
+            </div>
+        </div>
+
+        <div class="stats" id="stats"></div>
+        <div class="legend" id="legend">
+            <div class="legend-item">
+                <div class="legend-color actual"></div>
+                <span>Complete Periods</span>
+            </div>
+            <div class="legend-item" id="partialLegend" style="display: none;">
+                <div class="legend-color partial"></div>
+                <span>Partial Period</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color forecast"></div>
+                <span>Forecasted Data</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="output" class="loading">Load data to get started...</div>
+        </div>
+    </div>
+
+    <script>
+        let rawData = null;
+        let mappedData = null;
+        let fieldMapping = null;
+
+        // Load data from URL
+        async function loadDataFromUrl() {
+            const url = document.getElementById('dataUrl').value.trim();
+            if (!url) {
+                showAlert('error', 'Please enter a URL');
+                return;
+            }
+
+            document.getElementById('output').innerHTML = '<div class="loading">Loading data...</div>';
+            hideAlerts();
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+                const data = await response.json();
+                processLoadedData(data);
+
+            } catch (error) {
+                showAlert('error', `Failed to load: ${error.message}`);
+            }
+        }
+
+        // Use sample data
+        function useSampleData() {
+            const data = {
+                columns: ['region', 'period', 'sales_amount', 'product'],
+                rows: []
+            };
+
+            const regions = ['North America', 'Europe', 'Asia'];
+            for (let year = 2020; year <= 2024; year++) {
+                const maxMonth = year === 2024 ? 8 : 12;
+                for (let month = 1; month <= maxMonth; month++) {
+                    regions.forEach(region => {
+                        const base = Math.random() * 50000 + 30000;
+                        const growth = Math.pow(1.08, year - 2020);
+                        const seasonal = 1 + Math.sin(month / 12 * Math.PI * 2) * 0.15;
+                        data.rows.push([
+                            region,
+                            `${year}-${String(month).padStart(2, '0')}`,
+                            Math.round(base * growth * seasonal),
+                            'Product A'
+                        ]);
+                    });
+                }
+            }
+
+            processLoadedData(data);
+        }
+
+        // Process loaded data
+        function processLoadedData(data) {
+            rawData = data;
+
+            // Detect data format
+            let headers;
+            if (data.headers) {
+                headers = data.headers;
+            } else if (data.columns) {
+                headers = data.columns;
+            } else if (data.rows && data.rows[0]) {
+                // Try to infer from first row
+                headers = data.rows[0].map((_, i) => `column_${i}`);
+            } else {
+                showAlert('error', 'Could not detect data format. Need headers/columns or rows array.');
+                return;
+            }
+
+            // Populate field dropdowns
+            const dimensionField = document.getElementById('dimensionField');
+            const periodField = document.getElementById('periodField');
+            const valueField = document.getElementById('valueField');
+
+            [dimensionField, periodField, valueField].forEach(select => {
+                select.innerHTML = '<option value="">-- Select Field --</option>';
+                headers.forEach((field, idx) => {
+                    select.innerHTML += `<option value="${idx}">${field}</option>`;
+                });
+            });
+
+            // Auto-detect likely fields
+            headers.forEach((field, idx) => {
+                const lower = field.toLowerCase();
+
+                // Dimension field guesses
+                if (lower.includes('region') || lower.includes('territory') || lower.includes('category') || lower.includes('dimension')) {
+                    dimensionField.value = idx;
+                }
+
+                // Period field guesses
+                if (lower.includes('date') || lower.includes('month') || lower.includes('period') || lower.includes('time') || lower.includes('year_month')) {
+                    periodField.value = idx;
+                }
+
+                // Value field guesses
+                if (lower.includes('revenue') || lower.includes('sales') || lower.includes('amount') || lower.includes('value')) {
+                    valueField.value = idx;
+                }
+            });
+
+            document.getElementById('fieldMapping').classList.add('show');
+            showAlert('success', `Data loaded: ${data.rows.length} rows, ${headers.length} fields. Map your fields below.`);
+        }
+
+        // Apply field mapping
+        function applyMapping() {
+            const dimensionIdx = parseInt(document.getElementById('dimensionField').value);
+            const periodIdx = parseInt(document.getElementById('periodField').value);
+            const valueIdx = parseInt(document.getElementById('valueField').value);
+            const periodFormat = document.getElementById('periodFormat').value;
+
+            if (isNaN(dimensionIdx) || isNaN(periodIdx) || isNaN(valueIdx)) {
+                showAlert('error', 'Please select all required fields (*, marked)');
+                return;
+            }
+
+            fieldMapping = { dimensionIdx, periodIdx, valueIdx, periodFormat };
+
+            // Transform data to standard format
+            const headers = rawData.headers || rawData.columns || rawData.rows[0].map((_, i) => `column_${i}`);
+
+            mappedData = {
+                headers: ['dimension', 'period', 'value'],
+                rows: rawData.rows.map(row => [
+                    row[dimensionIdx],
+                    normalizePeriod(row[periodIdx], periodFormat),
+                    parseFloat(row[valueIdx]) || 0
+                ])
+            };
+
+            document.getElementById('controls').classList.add('show');
+            showAlert('success', `✅ Fields mapped! Ready to forecast. Click "Generate Pivot & Forecast" below.`);
+            document.getElementById('output').innerHTML = '<div class="loading">Fields mapped successfully! Configure forecast settings and click Generate.</div>';
+        }
+
+        // Normalize period to YYYY-MM format
+        function normalizePeriod(period, format) {
+            if (format === 'YYYY-MM') return period;
+            if (format === 'YYYY-MM-DD') return period.substring(0, 7);
+
+            // Auto-detect
+            if (typeof period === 'string') {
+                if (period.match(/^\d{4}-\d{2}$/)) return period; // YYYY-MM
+                if (period.match(/^\d{4}-\d{2}-\d{2}/)) return period.substring(0, 7); // YYYY-MM-DD
+            }
+
+            return period;
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            hideAlerts();
+            const alertMap = {
+                error: 'errorAlert',
+                success: 'successAlert',
+                warning: 'partialAlert'
+            };
+            const alertId = alertMap[type];
+            if (alertId) {
+                document.getElementById(alertId).classList.add('show');
+                const textId = type === 'error' ? 'errorText' : type === 'success' ? 'successText' : 'partialText';
+                document.getElementById(textId).textContent = message;
+            }
+        }
+
+        // Hide alerts
+        function hideAlerts() {
+            ['errorAlert', 'successAlert', 'partialAlert'].forEach(id => {
+                document.getElementById(id).classList.remove('show');
+            });
+        }
+
+        // [REST OF FORECASTING CODE - Same as before but using mappedData]
+        // detectPartialPeriod, aggregateData, Forecaster, createPivot, etc.
+
+        function detectPartialPeriod(data, aggregation) {
+            const rows = data.rows;
+            const periodCounts = new Map();
+
+            rows.forEach(row => {
+                const period = row[1]; // period field
+                const [year, month] = period.split('-').map(Number);
+
+                let aggPeriod;
+                switch(aggregation) {
+                    case 'monthly': aggPeriod = period; break;
+                    case 'quarterly': aggPeriod = `${year}-Q${Math.ceil(month / 3)}`; break;
+                    case 'yearly': aggPeriod = year.toString(); break;
+                }
+                periodCounts.set(aggPeriod, (periodCounts.get(aggPeriod) || 0) + 1);
+            });
+
+            const periods = Array.from(periodCounts.keys()).sort();
+            const lastPeriod = periods[periods.length - 1];
+            const lastCount = periodCounts.get(lastPeriod);
+            const counts = Array.from(periodCounts.values());
+            const avgCount = counts.slice(0, -1).reduce((a, b) => a + b, 0) / (counts.length - 1);
+            const isPartial = lastCount < avgCount * 0.9;
+
+            return { isPartial, lastPeriod, lastCount, avgCount: Math.round(avgCount), completeness: (lastCount / avgCount * 100).toFixed(0) };
+        }
+
+        function aggregateData(data, level) {
+            const rows = data.rows;
+            const aggregated = new Map();
+
+            rows.forEach(row => {
+                const dimension = row[0];
+                const period = row[1];
+                const value = row[2];
+
+                const [year, month] = period.split('-').map(Number);
+
+                let aggPeriod, periodLabel;
+                switch(level) {
+                    case 'monthly':
+                        aggPeriod = period;
+                        periodLabel = period;
+                        break;
+                    case 'quarterly':
+                        const quarter = Math.ceil(month / 3);
+                        aggPeriod = `${year}-Q${quarter}`;
+                        periodLabel = `Q${quarter} ${year}`;
+                        break;
+                    case 'yearly':
+                        aggPeriod = year.toString();
+                        periodLabel = year.toString();
+                        break;
+                }
+
+                const key = `${dimension}|${aggPeriod}`;
+                if (!aggregated.has(key)) {
+                    aggregated.set(key, {dimension, period: aggPeriod, periodLabel, value: 0});
+                }
+                aggregated.get(key).value += value;
+            });
+
+            return Array.from(aggregated.values());
+        }
+
+        class Forecaster {
+            static linearRegression(values) {
+                const n = values.length;
+                const x = Array.from({length: n}, (_, i) => i);
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = values.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * values[i], 0);
+                const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+                return {slope, intercept};
+            }
+
+            static exponentialSmoothing(values, alpha = 0.3) {
+                if (values.length === 0) return {smoothed: [], trend: 0, lastValue: 0};
+                const smoothed = [values[0]];
+                for (let i = 1; i < values.length; i++) {
+                    smoothed.push(alpha * values[i] + (1 - alpha) * smoothed[i - 1]);
+                }
+                const trend = values.length > 1 ? (values[values.length - 1] - values[0]) / (values.length - 1) : 0;
+                return {smoothed, trend, lastValue: smoothed[smoothed.length - 1]};
+            }
+
+            static forecast(values, method, periods = 12) {
+                if (values.length === 0) return [];
+                const forecasts = [];
+
+                switch(method) {
+                    case 'linear': {
+                        const {slope, intercept} = this.linearRegression(values);
+                        const n = values.length;
+                        for (let i = 0; i < periods; i++) {
+                            forecasts.push(Math.max(0, slope * (n + i) + intercept));
+                        }
+                        break;
+                    }
+                    case 'exponential':
+                    case 'seasonal': {
+                        const {trend, lastValue} = this.exponentialSmoothing(values);
+                        let forecast = lastValue;
+                        for (let i = 0; i < periods; i++) {
+                            forecast = forecast + trend;
+                            forecasts.push(Math.max(0, forecast));
+                        }
+                        break;
+                    }
+                }
+                return forecasts;
+            }
+
+            static calculateConfidenceInterval(values, forecast, confidenceLevel) {
+                const mean = values.reduce((a, b) => a + b, 0) / values.length;
+                const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+                const stdDev = Math.sqrt(variance);
+                const zScores = {0.80: 1.28, 0.90: 1.645, 0.95: 1.96, 0.99: 2.576};
+                const z = zScores[confidenceLevel] || 1.96;
+                const margin = z * stdDev;
+                return { lower: Math.max(0, forecast - margin), upper: forecast + margin };
+            }
+        }
+
+        function createPivot(data, aggregation, partialHandling, forecastPeriods, method, confidenceLevel) {
+            const aggregated = aggregateData(data, aggregation);
+            const partialInfo = detectPartialPeriod(data, aggregation);
+            const dimensionMap = new Map();
+
+            aggregated.forEach(item => {
+                const {dimension, period, periodLabel, value} = item;
+                if (!dimensionMap.has(dimension)) {
+                    dimensionMap.set(dimension, new Map());
+                }
+                dimensionMap.get(dimension).set(period, {value, periodLabel});
+            });
+
+            const allPeriods = new Set();
+            dimensionMap.forEach(periodMap => {
+                periodMap.forEach((_, period) => allPeriods.add(period));
+            });
+            const periods = Array.from(allPeriods).sort();
+
+            let forecastBasePeriods = [...periods];
+            let partialPeriod = null;
+
+            if (partialInfo.isPartial) {
+                partialPeriod = partialInfo.lastPeriod;
+                if (partialHandling === 'exclude') {
+                    forecastBasePeriods = periods.slice(0, -1);
+                }
+            }
+
+            const pivot = {
+                dimensions: Array.from(dimensionMap.keys()).sort(),
+                periods: periods,
+                forecastBasePeriods: forecastBasePeriods,
+                data: new Map(),
+                forecasts: new Map(),
+                confidenceIntervals: new Map(),
+                partialInfo: partialInfo,
+                partialPeriod: partialPeriod
+            };
+
+            const lastPeriod = forecastBasePeriods[forecastBasePeriods.length - 1];
+            const forecastPeriodLabels = [];
+
+            for (let i = 1; i <= forecastPeriods; i++) {
+                if (aggregation === 'yearly') {
+                    forecastPeriodLabels.push((parseInt(lastPeriod) + i).toString());
+                } else if (aggregation === 'quarterly') {
+                    const [year, q] = lastPeriod.split('-Q');
+                    let newYear = parseInt(year);
+                    let newQ = parseInt(q) + i;
+                    while (newQ > 4) { newQ -= 4; newYear += 1; }
+                    forecastPeriodLabels.push(`${newYear}-Q${newQ}`);
+                } else {
+                    const [year, month] = lastPeriod.split('-').map(Number);
+                    let newYear = year;
+                    let newMonth = month + i;
+                    while (newMonth > 12) { newMonth -= 12; newYear += 1; }
+                    forecastPeriodLabels.push(`${newYear}-${String(newMonth).padStart(2, '0')}`);
+                }
+            }
+
+            pivot.forecastPeriods = forecastPeriodLabels;
+
+            pivot.dimensions.forEach(dimension => {
+                const periodMap = dimensionMap.get(dimension);
+                const actualValues = forecastBasePeriods.map(p => periodMap.has(p) ? periodMap.get(p).value : 0);
+                const allData = periods.map(p => periodMap.has(p) ? periodMap.get(p) : {value: 0, periodLabel: p});
+                pivot.data.set(dimension, allData);
+                const forecastValues = Forecaster.forecast(actualValues, method, forecastPeriods);
+                pivot.forecasts.set(dimension, forecastValues);
+                const intervals = forecastValues.map(forecast =>
+                    Forecaster.calculateConfidenceInterval(actualValues, forecast, confidenceLevel)
+                );
+                pivot.confidenceIntervals.set(dimension, intervals);
+            });
+
+            return pivot;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function renderPivot(pivot) {
+            const {dimensions, periods, forecastPeriods, data, forecasts, confidenceIntervals, partialPeriod} = pivot;
+
+            let html = '<table><thead><tr><th>Dimension</th>';
+
+            periods.forEach(period => {
+                const isPartial = period === partialPeriod;
+                const headerClass = isPartial ? 'partial-header' : '';
+                const periodData = data.get(dimensions[0]);
+                const idx = periods.indexOf(period);
+                const label = periodData[idx].periodLabel || period;
+                html += `<th class="${headerClass}">${label}${isPartial ? ' *' : ''}</th>`;
+            });
+
+            forecastPeriods.forEach(period => {
+                html += `<th class="forecast-header">📈 ${period}</th>`;
+            });
+
+            html += '</tr></thead><tbody>';
+
+            dimensions.forEach(dimension => {
+                html += '<tr><td>' + dimension + '</td>';
+                const periodData = data.get(dimension);
+                periodData.forEach((item, idx) => {
+                    const isPartial = periods[idx] === partialPeriod;
+                    const colClass = isPartial ? 'partial-col' : '';
+                    html += `<td class="number ${colClass}">${formatCurrency(item.value)}</td>`;
+                });
+
+                const forecastValues = forecasts.get(dimension);
+                const intervals = confidenceIntervals.get(dimension);
+                forecastValues.forEach((value, idx) => {
+                    const interval = intervals[idx];
+                    html += `<td class="forecast-col number">${formatCurrency(value)}<span class="confidence-interval">±${formatCurrency((interval.upper - interval.lower) / 2)}</span></td>`;
+                });
+
+                html += '</tr>';
+            });
+
+            html += '<tr class="total-row"><td>TOTAL</td>';
+            periods.forEach((period, idx) => {
+                const total = dimensions.reduce((sum, dimension) => sum + data.get(dimension)[idx].value, 0);
+                const isPartial = period === partialPeriod;
+                const colClass = isPartial ? 'partial-col' : '';
+                html += `<td class="number ${colClass}">${formatCurrency(total)}</td>`;
+            });
+
+            forecastPeriods.forEach((period, idx) => {
+                const total = dimensions.reduce((sum, dimension) => sum + forecasts.get(dimension)[idx], 0);
+                html += `<td class="forecast-col number">${formatCurrency(total)}</td>`;
+            });
+
+            html += '</tr></tbody></table>';
+            return html;
+        }
+
+        function generatePivot() {
+            if (!mappedData) {
+                showAlert('error', 'Please load and map data first!');
+                return;
+            }
+
+            document.getElementById('output').innerHTML = '<div class="loading">Generating forecasts...</div>';
+
+            try {
+                const aggregation = document.getElementById('aggregation').value;
+                const partialHandling = document.getElementById('partialHandling').value;
+                const forecastPeriods = parseInt(document.getElementById('forecastPeriods').value);
+                const method = document.getElementById('forecastMethod').value;
+                const confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+
+                const pivotData = createPivot(mappedData, aggregation, partialHandling, forecastPeriods, method, confidenceLevel);
+
+                if (pivotData.partialInfo.isPartial) {
+                    showAlert('warning', `Last period (${pivotData.partialInfo.lastPeriod}) is ${pivotData.partialInfo.completeness}% complete. Handling: ${partialHandling}`);
+                    document.getElementById('partialLegend').style.display = 'flex';
+                }
+
+                document.getElementById('output').innerHTML = renderPivot(pivotData);
+                document.getElementById('stats').classList.add('show');
+                document.getElementById('legend').classList.add('show');
+
+                // Simple stats
+                const totalForecast = pivotData.dimensions.reduce((sum, dim) =>
+                    sum + pivotData.forecasts.get(dim).reduce((a, b) => a + b, 0), 0
+                );
+
+                document.getElementById('stats').innerHTML = `
+                    <div class="stat-card">
+                        <h3>Dimensions</h3>
+                        <div class="value">${pivotData.dimensions.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Periods</h3>
+                        <div class="value">${pivotData.periods.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Forecast Total</h3>
+                        <div class="value">${formatCurrency(totalForecast)}</div>
+                    </div>
+                `;
+
+            } catch (error) {
+                showAlert('error', `Error: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Save configuration
+        function saveConfiguration() {
+            const config = {
+                version: '1.0',
+                dataUrl: document.getElementById('dataUrl').value,
+                fieldMapping: {
+                    dimensionIdx: parseInt(document.getElementById('dimensionField').value),
+                    periodIdx: parseInt(document.getElementById('periodField').value),
+                    valueIdx: parseInt(document.getElementById('valueField').value),
+                    periodFormat: document.getElementById('periodFormat').value
+                },
+                forecastSettings: {
+                    aggregation: document.getElementById('aggregation').value,
+                    partialHandling: document.getElementById('partialHandling').value,
+                    forecastMethod: document.getElementById('forecastMethod').value,
+                    forecastPeriods: parseInt(document.getElementById('forecastPeriods').value),
+                    confidenceLevel: parseFloat(document.getElementById('confidenceLevel').value)
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(config, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pivot-config-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Also save to localStorage
+            localStorage.setItem('pivotConfig', JSON.stringify(config));
+
+            showAlert('success', '✅ Configuration saved! Download started and saved to browser storage.');
+        }
+
+        // Load configuration
+        function loadConfiguration(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    applyConfiguration(config);
+                } catch (error) {
+                    showAlert('error', 'Invalid configuration file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Apply configuration
+        function applyConfiguration(config) {
+            // Set data URL
+            if (config.dataUrl) {
+                document.getElementById('dataUrl').value = config.dataUrl;
+            }
+
+            // Set field mappings (will be applied after data loads)
+            if (config.fieldMapping) {
+                window.savedFieldMapping = config.fieldMapping;
+            }
+
+            // Set forecast settings
+            if (config.forecastSettings) {
+                const settings = config.forecastSettings;
+                if (settings.aggregation) document.getElementById('aggregation').value = settings.aggregation;
+                if (settings.partialHandling) document.getElementById('partialHandling').value = settings.partialHandling;
+                if (settings.forecastMethod) document.getElementById('forecastMethod').value = settings.forecastMethod;
+                if (settings.forecastPeriods) document.getElementById('forecastPeriods').value = settings.forecastPeriods;
+                if (settings.confidenceLevel) document.getElementById('confidenceLevel').value = settings.confidenceLevel;
+            }
+
+            showAlert('success', `✅ Configuration loaded! Saved on ${new Date(config.timestamp).toLocaleDateString()}. ${config.dataUrl ? 'Click "Load from URL" to fetch data.' : 'Load your data to continue.'}`);
+
+            // Auto-load data if URL is present
+            if (config.dataUrl) {
+                setTimeout(() => loadDataFromUrl(), 1000);
+            }
+        }
+
+        // Modify processLoadedData to apply saved field mapping
+        const originalProcessLoadedData = processLoadedData;
+        processLoadedData = function(data) {
+            rawData = data;
+
+            // Detect data format
+            let headers;
+            if (data.headers) {
+                headers = data.headers;
+            } else if (data.columns) {
+                headers = data.columns;
+            } else if (data.rows && data.rows[0]) {
+                headers = data.rows[0].map((_, i) => `column_${i}`);
+            } else {
+                showAlert('error', 'Could not detect data format. Need headers/columns or rows array.');
+                return;
+            }
+
+            // Populate field dropdowns
+            const dimensionField = document.getElementById('dimensionField');
+            const periodField = document.getElementById('periodField');
+            const valueField = document.getElementById('valueField');
+
+            [dimensionField, periodField, valueField].forEach(select => {
+                select.innerHTML = '<option value="">-- Select Field --</option>';
+                headers.forEach((field, idx) => {
+                    select.innerHTML += `<option value="${idx}">${field}</option>`;
+                });
+            });
+
+            // Apply saved field mapping if exists
+            if (window.savedFieldMapping) {
+                const mapping = window.savedFieldMapping;
+                if (!isNaN(mapping.dimensionIdx)) dimensionField.value = mapping.dimensionIdx;
+                if (!isNaN(mapping.periodIdx)) periodField.value = mapping.periodIdx;
+                if (!isNaN(mapping.valueIdx)) valueField.value = mapping.valueIdx;
+                if (mapping.periodFormat) document.getElementById('periodFormat').value = mapping.periodFormat;
+
+                showAlert('success', '✅ Data loaded & field mappings auto-applied! Review and click "Apply Mapping".');
+                window.savedFieldMapping = null; // Clear after applying
+            } else {
+                // Auto-detect likely fields
+                headers.forEach((field, idx) => {
+                    const lower = field.toLowerCase();
+
+                    if (lower.includes('region') || lower.includes('territory') || lower.includes('category') || lower.includes('dimension')) {
+                        dimensionField.value = idx;
+                    }
+                    if (lower.includes('date') || lower.includes('month') || lower.includes('period') || lower.includes('time') || lower.includes('year_month')) {
+                        periodField.value = idx;
+                    }
+                    if (lower.includes('revenue') || lower.includes('sales') || lower.includes('amount') || lower.includes('value')) {
+                        valueField.value = idx;
+                    }
+                });
+
+                showAlert('success', `Data loaded: ${data.rows.length} rows, ${headers.length} fields. Map your fields below.`);
+            }
+
+            document.getElementById('fieldMapping').classList.add('show');
+        };
+
+        // Load from localStorage on page load
+        window.addEventListener('load', function() {
+            const savedConfig = localStorage.getItem('pivotConfig');
+            if (savedConfig) {
+                try {
+                    const config = JSON.parse(savedConfig);
+                    if (confirm(`Restore previous configuration from ${new Date(config.timestamp).toLocaleString()}?`)) {
+                        applyConfiguration(config);
+                    }
+                } catch (e) {
+                    console.error('Failed to restore config:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
