@@ -36,38 +36,66 @@ This document outlines potential features that could enhance the pivot table imp
 - Weighted averages
 - Custom aggregation functions
 
+## 🔮 Predictive Analytics & Forecasting
+
+### 6. Time-Series Forecasting
+- **Automatic column value prediction** - Forecast next N periods based on historical data
+- Multiple forecasting algorithms:
+  - Linear regression
+  - Exponential smoothing (single, double, triple)
+  - ARIMA (AutoRegressive Integrated Moving Average)
+  - Seasonal decomposition
+  - Prophet (Facebook's forecasting library)
+- **Confidence intervals** - Show upper/lower bounds (e.g., 80%, 95%)
+- **Forecast accuracy metrics**:
+  - MAPE (Mean Absolute Percentage Error)
+  - RMSE (Root Mean Square Error)
+  - MAE (Mean Absolute Error)
+- **Visual indicators** - Distinguish forecast columns from actual data (different styling/colors)
+- **What-if scenarios** - Adjust parameters and see impact on forecasts
+- **Seasonal adjustments** - Handle weekly, monthly, quarterly, yearly patterns
+- **Trend analysis** - Identify upward/downward trends and growth rates
+- **Anomaly detection** - Flag unusual values that might affect forecasts
+- **Multi-dimensional forecasting** - Forecast across multiple row dimensions simultaneously
+
+### 7. Regression Analysis
+- Linear and polynomial regression
+- Multiple regression with multiple independent variables
+- Correlation analysis between dimensions
+- R-squared and statistical significance indicators
+
 ## 📐 Layout Enhancements
 
-### 6. Totals & Subtotals
+### 8. Totals & Subtotals
 - Grand totals (row/column/both)
 - Subtotals for grouped dimensions
 - Configurable subtotal positions (top/bottom)
 - Subtotal formatting
 
-### 7. Multiple Value Fields in UI
+### 9. Multiple Value Fields in UI
 - Currently supported in core, but not in demo UI
 - Show multiple metrics side-by-side
 - Compare different aggregations of same field
 
-### 8. Compact/Tabular/Outline Layouts
+### 10. Compact/Tabular/Outline Layouts
 - Different visual layouts like Excel
 - Hierarchical grouping with expand/collapse
 - Indentation for nested dimensions
 
 ## 🔍 Filtering & Sorting
 
-### 9. Pre-Pivot Filtering
+### 11. Pre-Pivot Filtering
 - Filter source data before pivoting
 - Date range filters
 - Top N / Bottom N filters
 - Include/exclude specific values
 
-### 10. Post-Pivot Filtering
+### 12. Post-Pivot Filtering
 - Search within displayed pivot
 - Filter by row/column headers
 - Value filters (show only cells > X)
 
-### 11. Sorting
+### 13. Sorting
 - Sort rows by labels or values
 - Sort columns by labels or values
 - Multi-level sorting
@@ -75,18 +103,18 @@ This document outlines potential features that could enhance the pivot table imp
 
 ## 💾 Data Management
 
-### 12. Drill-Down/Drill-Through
+### 14. Drill-Down/Drill-Through
 - Click cells to see underlying detail records
 - Export detail data for specific cell
 - Modal showing source rows
 
-### 13. Data Refresh
+### 15. Data Refresh
 - Auto-refresh at intervals
 - Manual refresh button
 - Show last refresh time
 - Differential loading (only changed data)
 
-### 14. Large Dataset Handling
+### 16. Large Dataset Handling
 - Pagination for large pivots
 - Virtual scrolling
 - Lazy loading of data
@@ -94,84 +122,84 @@ This document outlines potential features that could enhance the pivot table imp
 
 ## 🎨 UI/UX Improvements
 
-### 15. URL Parameters
+### 17. URL Parameters
 - Load configuration from URL query string
 - Shareable links with embedded config
 - Browser back/forward navigation
 
-### 16. Drag & Drop Configuration
+### 18. Drag & Drop Configuration
 - Drag fields between rows/columns/values
 - Visual field list
 - Drag to reorder fields
 
-### 17. Copy/Paste
+### 19. Copy/Paste
 - Copy pivot table to clipboard
 - Paste into Excel/Google Sheets
 - Copy individual cells/ranges
 
-### 18. Undo/Redo
+### 20. Undo/Redo
 - History of configuration changes
 - Keyboard shortcuts (Ctrl+Z, Ctrl+Y)
 
-### 19. Field Formatting
+### 21. Field Formatting
 - Number formatting (currency, percentages, decimals)
 - Date formatting
 - Custom format strings
 - Locale support
 
-### 20. Freeze Panes/Sticky Headers
+### 22. Freeze Panes/Sticky Headers
 - Already has sticky header CSS
 - Could add sticky row headers
 - Freeze first N rows/columns
 
 ## 📤 Export Enhancements
 
-### 21. Excel Export (XLSX)
+### 23. Excel Export (XLSX)
 - Generate actual Excel files (using libraries like ExcelJS)
 - Preserve formatting
 - Include multiple sheets
 
-### 22. PDF Export
+### 24. PDF Export
 - Generate PDF reports
 - Include charts and formatting
 - Page breaks and headers
 
-### 23. Image Export
+### 25. Image Export
 - Export as PNG/SVG
 - Screenshot functionality
 - For embedding in presentations
 
 ## 🔧 Advanced Features
 
-### 24. Pivot Templates
+### 26. Pivot Templates
 - Pre-defined pivot configurations
 - Template library
 - Share templates across organization
 
-### 25. Multiple Data Sources
+### 27. Multiple Data Sources
 - Join/merge multiple datasets
 - Union data from different URLs
 - Data source switching
 
-### 26. Comparison Mode
+### 28. Comparison Mode
 - Side-by-side comparison of two time periods
 - Difference and % change columns
 - Variance analysis
 
-### 27. Named Sets
+### 29. Named Sets
 - Create custom groups (e.g., "Top Markets", "Key Products")
 - Reusable across pivots
 
-### 28. Pivot on Pivot
+### 30. Pivot on Pivot
 - Use pivot output as input for another pivot
 - Chain transformations
 
-### 29. MDX/OLAP Support
+### 31. MDX/OLAP Support
 - Connect to OLAP cubes
 - MDX query builder
 - Hierarchical dimensions
 
-### 30. Collaboration Features
+### 32. Collaboration Features
 - Comments on cells
 - Share with team
 - Version history
@@ -179,17 +207,17 @@ This document outlines potential features that could enhance the pivot table imp
 
 ## 🔌 Integration Features
 
-### 31. Embedding
+### 33. Embedding
 - iframe-friendly embedding
 - Web component wrapper
 - React/Vue/Angular components
 
-### 32. API/Webhooks
+### 34. API/Webhooks
 - REST API for pivot operations
 - Webhooks for data updates
 - Integration with BI tools
 
-### 33. Database Connections
+### 35. Database Connections
 - Direct SQL queries
 - PostgreSQL, MySQL, SQLite support
 - Query builder
@@ -198,9 +226,10 @@ This document outlines potential features that could enhance the pivot table imp
 
 The most impactful features to implement first:
 
-1. **Grand totals** (easy, high value)
-2. **Multiple value fields in UI** (easy, already supported in core)
-3. **Sorting** (medium, very useful)
-4. **Drill-down to detail** (medium, great UX)
-5. **Chart generation** (medium-hard, high visual impact)
-6. **URL parameters for sharing** (easy, great for collaboration)
+1. **Time-Series Forecasting** (medium-hard, extremely high value) - Predict future column values automatically
+2. **Grand totals** (easy, high value)
+3. **Multiple value fields in UI** (easy, already supported in core)
+4. **Sorting** (medium, very useful)
+5. **Drill-down to detail** (medium, great UX)
+6. **Chart generation** (medium-hard, high visual impact)
+7. **URL parameters for sharing** (easy, great for collaboration)
