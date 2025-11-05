@@ -54,6 +54,30 @@
       background: white;
     }
 
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .url-group {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .url-group .control-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .url-group button {
+      flex-shrink: 0;
+      height: 38px;
+    }
+
     button {
       background-color: #3498db;
       color: white;
@@ -169,10 +193,17 @@
   <h1>📊 Interactive Pivot Table Demo</h1>
 
   <div class="info">
-    <strong>How to use:</strong> Select dimensions for rows and columns, choose a value field and aggregation method, then click "Generate Pivot Table".
+    <strong>How to use:</strong> Load data from a URL (default: example.json), then select dimensions for rows and columns, choose a value field and aggregation method, and click "Generate Pivot Table".
   </div>
 
   <div class="controls">
+    <div class="url-group">
+      <div class="control-group">
+        <label>Data URL:</label>
+        <input type="text" id="dataUrl" value="example.json" placeholder="Enter JSON data URL...">
+      </div>
+      <button onclick="loadData()">📥 Load Data</button>
+    </div>
     <div class="grid">
       <div class="control-group">
         <label>Row Fields (hold Ctrl/Cmd for multiple):</label>
@@ -220,10 +251,40 @@
 
     // Load data on page load
     window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const response = await fetch('example.json');
-        currentData = await response.json();
+      // Load default data
+      await loadData();
+    });
 
+    async function loadData() {
+      const urlInput = document.getElementById('dataUrl');
+      const url = urlInput.value.trim();
+
+      if (!url) {
+        showError('Please enter a data URL');
+        return;
+      }
+
+      try {
+        showInfo('Loading data from ' + url + '...');
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Validate data format
+        if (!data.headers || !data.types || !data.rows) {
+          throw new Error('Invalid data format. Expected {headers, types, rows}');
+        }
+
+        currentData = data;
+
+        // Clear previous selections
+        clearControls();
+
+        // Initialize with new data
         initializeControls();
 
         // Set default configuration
@@ -231,10 +292,24 @@
 
         // Generate initial pivot
         generatePivot();
+
+        showSuccess('Data loaded successfully! ' + currentData.rows.length + ' rows, ' + currentData.headers.length + ' columns.');
       } catch (error) {
         showError('Failed to load data: ' + error.message);
+        currentData = null;
       }
-    });
+    }
+
+    function clearControls() {
+      const rowSelect = document.getElementById('rowFields');
+      const colSelect = document.getElementById('columnFields');
+      const valueSelect = document.getElementById('valueField');
+
+      // Clear all options
+      rowSelect.innerHTML = '';
+      colSelect.innerHTML = '';
+      valueSelect.innerHTML = '';
+    }
 
     function initializeControls() {
       const rowSelect = document.getElementById('rowFields');
@@ -265,25 +340,36 @@
       const colSelect = document.getElementById('columnFields');
       const valueSelect = document.getElementById('valueField');
 
-      // Select country and territory for rows
+      // Try to select common dimension fields for rows
+      const commonRowFields = ['country', 'territory', 'category', 'region', 'product'];
+      let rowsSelected = 0;
       Array.from(rowSelect.options).forEach(opt => {
-        if (opt.value === 'country' || opt.value === 'territory') {
+        if (commonRowFields.includes(opt.value.toLowerCase()) && rowsSelected < 2) {
           opt.selected = true;
+          rowsSelected++;
         }
       });
 
-      // Select year for columns
+      // Try to select time-based fields for columns
+      const commonColFields = ['year', 'month', 'quarter', 'date'];
       Array.from(colSelect.options).forEach(opt => {
-        if (opt.value === 'year') {
+        if (commonColFields.includes(opt.value.toLowerCase())) {
           opt.selected = true;
         }
       });
 
-      // Select revenue for value
-      valueSelect.value = 'revenue';
+      // Select first numeric field for value
+      if (valueSelect.options.length > 0) {
+        valueSelect.selectedIndex = 0;
+      }
     }
 
     function generatePivot() {
+      if (!currentData) {
+        showError('Please load data first');
+        return;
+      }
+
       const rowSelect = document.getElementById('rowFields');
       const colSelect = document.getElementById('columnFields');
       const valueField = document.getElementById('valueField').value;
@@ -370,6 +456,16 @@
     function showError(message) {
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${escapeHtml(message)}</div>`;
+    }
+
+    function showInfo(message) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<div class="info">${escapeHtml(message)}</div>`;
+    }
+
+    function showSuccess(message) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<div style="background-color: #27ae60; color: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;"><strong>✓ Success:</strong> ${escapeHtml(message)}</div>`;
     }
 
     function escapeHtml(text) {
