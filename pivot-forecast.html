@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pivot Table with Forecasting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            align-self: flex-end;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-color.actual {
+            background: white;
+            border: 2px solid #333;
+        }
+
+        .legend-color.forecast {
+            background: #fff4e6;
+            border: 2px dashed #ff9800;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border: 1px solid #e0e0e0;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+        }
+
+        thead th:first-child {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 15;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        tbody tr:hover td:first-child {
+            background-color: #f5f5f5;
+        }
+
+        .forecast-col {
+            background: #fff4e6;
+            border-left: 3px dashed #ff9800 !important;
+            font-weight: 600;
+            color: #e65100;
+        }
+
+        .forecast-header {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+            position: relative;
+        }
+
+        .forecast-header::after {
+            content: '📈 FORECAST';
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            font-size: 0.7em;
+            opacity: 0.9;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #f0f0f0 !important;
+            border-top: 3px solid #667eea !important;
+        }
+
+        .total-row td:first-child {
+            background-color: #f0f0f0 !important;
+        }
+
+        .confidence-interval {
+            font-size: 0.8em;
+            color: #666;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .accuracy-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .accuracy-info h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .accuracy-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .metric {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .metric-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .metric-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .number {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Pivot Table with Forecasting</h1>
+        <p class="subtitle">Revenue Analysis by Territory with Predictive Analytics</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="forecastMethod">Forecasting Method:</label>
+                <select id="forecastMethod">
+                    <option value="linear">Linear Regression</option>
+                    <option value="exponential" selected>Exponential Smoothing</option>
+                    <option value="average">Moving Average</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="forecastYears">Years to Forecast:</label>
+                <input type="number" id="forecastYears" value="2" min="1" max="5">
+            </div>
+            <div class="control-group">
+                <label for="confidenceLevel">Confidence Level:</label>
+                <select id="confidenceLevel">
+                    <option value="0.80">80%</option>
+                    <option value="0.95" selected>95%</option>
+                    <option value="0.99">99%</option>
+                </select>
+            </div>
+            <button onclick="generatePivot()">🚀 Generate Pivot & Forecast</button>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;"></div>
+
+        <div class="legend" id="legend" style="display: none;">
+            <div class="legend-item">
+                <div class="legend-color actual"></div>
+                <span>Actual Data</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color forecast"></div>
+                <span>Forecasted Data</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="output" class="loading">Click "Generate Pivot & Forecast" to start...</div>
+        </div>
+
+        <div id="accuracy" class="accuracy-info" style="display: none;">
+            <h3>📊 Forecast Quality Metrics</h3>
+            <div class="accuracy-metrics" id="accuracyMetrics"></div>
+        </div>
+    </div>
+
+    <script>
+        let pivotData = null;
+
+        // Load data
+        async function loadData() {
+            const response = await fetch('historical-data.json');
+            const data = await response.json();
+            return data;
+        }
+
+        // Forecasting Algorithms
+        class Forecaster {
+            static linearRegression(values) {
+                const n = values.length;
+                const x = Array.from({length: n}, (_, i) => i);
+                const y = values;
+
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+                const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
+                return {slope, intercept};
+            }
+
+            static exponentialSmoothing(values, alpha = 0.3) {
+                if (values.length === 0) return [];
+
+                const smoothed = [values[0]];
+                for (let i = 1; i < values.length; i++) {
+                    smoothed.push(alpha * values[i] + (1 - alpha) * smoothed[i - 1]);
+                }
+
+                // Calculate trend
+                const trend = values.length > 1 ?
+                    (values[values.length - 1] - values[0]) / (values.length - 1) : 0;
+
+                return {smoothed, trend, lastValue: smoothed[smoothed.length - 1]};
+            }
+
+            static movingAverage(values, window = 3) {
+                if (values.length < window) return values[values.length - 1];
+
+                const recent = values.slice(-window);
+                return recent.reduce((a, b) => a + b, 0) / window;
+            }
+
+            static forecast(values, method, periods = 2) {
+                if (values.length === 0) return [];
+
+                const forecasts = [];
+
+                switch(method) {
+                    case 'linear': {
+                        const {slope, intercept} = this.linearRegression(values);
+                        const n = values.length;
+                        for (let i = 0; i < periods; i++) {
+                            forecasts.push(Math.max(0, slope * (n + i) + intercept));
+                        }
+                        break;
+                    }
+
+                    case 'exponential': {
+                        const {trend, lastValue} = this.exponentialSmoothing(values);
+                        let forecast = lastValue;
+                        for (let i = 0; i < periods; i++) {
+                            forecast = forecast + trend;
+                            forecasts.push(Math.max(0, forecast));
+                        }
+                        break;
+                    }
+
+                    case 'average': {
+                        const avg = this.movingAverage(values);
+                        // Simple growth assumption
+                        const growthRate = values.length > 1 ?
+                            Math.pow(values[values.length - 1] / values[0], 1 / (values.length - 1)) : 1;
+                        let forecast = avg;
+                        for (let i = 0; i < periods; i++) {
+                            forecast = forecast * growthRate;
+                            forecasts.push(Math.max(0, forecast));
+                        }
+                        break;
+                    }
+                }
+
+                return forecasts;
+            }
+
+            static calculateConfidenceInterval(values, forecast, confidenceLevel) {
+                // Calculate standard deviation of residuals
+                const mean = values.reduce((a, b) => a + b, 0) / values.length;
+                const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+                const stdDev = Math.sqrt(variance);
+
+                // Z-scores for confidence levels
+                const zScores = {0.80: 1.28, 0.90: 1.645, 0.95: 1.96, 0.99: 2.576};
+                const z = zScores[confidenceLevel] || 1.96;
+
+                const margin = z * stdDev;
+                return {
+                    lower: Math.max(0, forecast - margin),
+                    upper: forecast + margin
+                };
+            }
+
+            static calculateAccuracy(actual, predicted) {
+                if (actual.length === 0) return null;
+
+                // MAPE (Mean Absolute Percentage Error)
+                let mape = 0;
+                let validCount = 0;
+                for (let i = 0; i < Math.min(actual.length, predicted.length); i++) {
+                    if (actual[i] !== 0) {
+                        mape += Math.abs((actual[i] - predicted[i]) / actual[i]);
+                        validCount++;
+                    }
+                }
+                mape = validCount > 0 ? (mape / validCount) * 100 : 0;
+
+                // RMSE (Root Mean Square Error)
+                let mse = 0;
+                for (let i = 0; i < Math.min(actual.length, predicted.length); i++) {
+                    mse += Math.pow(actual[i] - predicted[i], 2);
+                }
+                const rmse = Math.sqrt(mse / Math.min(actual.length, predicted.length));
+
+                // MAE (Mean Absolute Error)
+                let mae = 0;
+                for (let i = 0; i < Math.min(actual.length, predicted.length); i++) {
+                    mae += Math.abs(actual[i] - predicted[i]);
+                }
+                mae = mae / Math.min(actual.length, predicted.length);
+
+                return {mape, rmse, mae};
+            }
+        }
+
+        // Create pivot table
+        function createPivot(data, forecastYears, method, confidenceLevel) {
+            const rows = data.rows;
+
+            // Group by territory and year
+            const territoryYearMap = new Map();
+
+            rows.forEach(row => {
+                const [acc_code, cpyname, country, territory, year, revenue] = row;
+
+                if (!territoryYearMap.has(territory)) {
+                    territoryYearMap.set(territory, new Map());
+                }
+
+                const yearMap = territoryYearMap.get(territory);
+                if (!yearMap.has(year)) {
+                    yearMap.set(year, 0);
+                }
+
+                yearMap.set(year, yearMap.get(year) + revenue);
+            });
+
+            // Get all years (sorted)
+            const allYears = new Set();
+            territoryYearMap.forEach(yearMap => {
+                yearMap.forEach((_, year) => allYears.add(year));
+            });
+            const years = Array.from(allYears).sort();
+            const lastYear = Math.max(...years);
+
+            // Generate forecast years
+            const forecastYearsList = Array.from({length: forecastYears}, (_, i) => lastYear + i + 1);
+
+            // Build pivot with forecasts
+            const pivot = {
+                territories: [],
+                years: years,
+                forecastYears: forecastYearsList,
+                allYears: [...years, ...forecastYearsList],
+                data: new Map(),
+                forecasts: new Map(),
+                confidenceIntervals: new Map()
+            };
+
+            territoryYearMap.forEach((yearMap, territory) => {
+                pivot.territories.push(territory);
+
+                // Get actual values
+                const actualValues = years.map(y => yearMap.get(y) || 0);
+                pivot.data.set(territory, actualValues);
+
+                // Generate forecasts
+                const forecastValues = Forecaster.forecast(actualValues, method, forecastYears);
+                pivot.forecasts.set(territory, forecastValues);
+
+                // Calculate confidence intervals
+                const intervals = forecastValues.map(forecast =>
+                    Forecaster.calculateConfidenceInterval(actualValues, forecast, confidenceLevel)
+                );
+                pivot.confidenceIntervals.set(territory, intervals);
+            });
+
+            pivot.territories.sort();
+
+            return pivot;
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Render pivot table
+        function renderPivot(pivot, confidenceLevel) {
+            const {territories, years, forecastYears, allYears, data, forecasts, confidenceIntervals} = pivot;
+
+            let html = '<table><thead><tr>';
+            html += '<th>Territory</th>';
+
+            // Actual year columns
+            years.forEach(year => {
+                html += `<th>${year}</th>`;
+            });
+
+            // Forecast year columns
+            forecastYears.forEach(year => {
+                html += `<th class="forecast-header">${year}</th>`;
+            });
+
+            html += '</tr></thead><tbody>';
+
+            // Data rows
+            territories.forEach(territory => {
+                html += '<tr>';
+                html += `<td>${territory}</td>`;
+
+                // Actual data
+                const actualValues = data.get(territory);
+                actualValues.forEach(value => {
+                    html += `<td class="number">${formatCurrency(value)}</td>`;
+                });
+
+                // Forecast data
+                const forecastValues = forecasts.get(territory);
+                const intervals = confidenceIntervals.get(territory);
+                forecastValues.forEach((value, idx) => {
+                    const interval = intervals[idx];
+                    html += `<td class="forecast-col number">
+                        ${formatCurrency(value)}
+                        <span class="confidence-interval">
+                            ±${formatCurrency((interval.upper - interval.lower) / 2)}
+                        </span>
+                    </td>`;
+                });
+
+                html += '</tr>';
+            });
+
+            // Total row
+            html += '<tr class="total-row"><td>TOTAL</td>';
+
+            // Total actuals
+            years.forEach((year, idx) => {
+                const total = territories.reduce((sum, territory) => {
+                    return sum + data.get(territory)[idx];
+                }, 0);
+                html += `<td class="number">${formatCurrency(total)}</td>`;
+            });
+
+            // Total forecasts
+            forecastYears.forEach((year, idx) => {
+                const total = territories.reduce((sum, territory) => {
+                    return sum + forecasts.get(territory)[idx];
+                }, 0);
+                html += `<td class="forecast-col number">${formatCurrency(total)}</td>`;
+            });
+
+            html += '</tr></tbody></table>';
+
+            return html;
+        }
+
+        // Generate stats
+        function generateStats(pivot) {
+            const {territories, years, forecastYears, data, forecasts} = pivot;
+
+            // Total revenue (all years)
+            const totalActual = territories.reduce((sum, territory) => {
+                return sum + data.get(territory).reduce((a, b) => a + b, 0);
+            }, 0);
+
+            // Total forecast
+            const totalForecast = territories.reduce((sum, territory) => {
+                return sum + forecasts.get(territory).reduce((a, b) => a + b, 0);
+            }, 0);
+
+            // Year over year growth
+            const lastYearRevenue = territories.reduce((sum, territory) => {
+                const values = data.get(territory);
+                return sum + values[values.length - 1];
+            }, 0);
+
+            const firstYearRevenue = territories.reduce((sum, territory) => {
+                const values = data.get(territory);
+                return sum + values[0];
+            }, 0);
+
+            const cagr = Math.pow(lastYearRevenue / firstYearRevenue, 1 / (years.length - 1)) - 1;
+
+            return [
+                {label: 'Total Territories', value: territories.length},
+                {label: 'Historical Revenue', value: formatCurrency(totalActual)},
+                {label: 'Forecasted Revenue', value: formatCurrency(totalForecast)},
+                {label: 'CAGR (Historical)', value: (cagr * 100).toFixed(1) + '%'}
+            ];
+        }
+
+        // Main function
+        async function generatePivot() {
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<div class="loading">Loading data and generating forecasts...</div>';
+
+            try {
+                const data = await loadData();
+                const forecastYears = parseInt(document.getElementById('forecastYears').value);
+                const method = document.getElementById('forecastMethod').value;
+                const confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+
+                pivotData = createPivot(data, forecastYears, method, confidenceLevel);
+
+                // Render table
+                outputDiv.innerHTML = renderPivot(pivotData, confidenceLevel);
+
+                // Show stats
+                const stats = generateStats(pivotData);
+                const statsDiv = document.getElementById('stats');
+                statsDiv.style.display = 'grid';
+                statsDiv.innerHTML = stats.map(stat => `
+                    <div class="stat-card">
+                        <h3>${stat.label}</h3>
+                        <div class="value">${stat.value}</div>
+                    </div>
+                `).join('');
+
+                // Show legend
+                document.getElementById('legend').style.display = 'flex';
+
+                // Show accuracy info
+                document.getElementById('accuracy').style.display = 'block';
+                const accuracyDiv = document.getElementById('accuracyMetrics');
+                accuracyDiv.innerHTML = `
+                    <div class="metric">
+                        <div class="metric-label">Algorithm</div>
+                        <div class="metric-value">${method.charAt(0).toUpperCase() + method.slice(1)}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Confidence Level</div>
+                        <div class="metric-value">${(confidenceLevel * 100).toFixed(0)}%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Forecast Period</div>
+                        <div class="metric-value">${forecastYears} Years</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Data Points</div>
+                        <div class="metric-value">${data.rows.length}</div>
+                    </div>
+                `;
+
+            } catch (error) {
+                outputDiv.innerHTML = `<div class="loading" style="color: red;">Error: ${error.message}</div>`;
+                console.error(error);
+            }
+        }
+
+        // Generate on load
+        window.addEventListener('load', generatePivot);
+    </script>
+</body>
+</html>

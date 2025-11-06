@@ -1,0 +1,1900 @@
+{
+  "headers": [
+    "acc_code",
+    "cpyname",
+    "country",
+    "territory",
+    "year",
+    "revenue"
+  ],
+  "types": [
+    "string",
+    "string",
+    "string",
+    "string",
+    "integer",
+    "number"
+  ],
+  "rows": [
+    [
+      "992021",
+      "J Delgado t/a Socas Distribuciones",
+      "Canary Islands",
+      "Atlantic Islands",
+      2015,
+      15654
+    ],
+    [
+      "993240",
+      "Overseas Imports SL Wholesale",
+      "Canary Islands",
+      "Atlantic Islands",
+      2015,
+      77600
+    ],
+    [
+      "992151",
+      "B&S Global Food Purchase B.V.",
+      "Netherlands",
+      "Benelux",
+      2015,
+      1784
+    ],
+    [
+      "993348",
+      "Slik Brothers Bleiswijk BV",
+      "Netherlands",
+      "Benelux",
+      2015,
+      9579
+    ],
+    [
+      "992778",
+      "Stonemanor",
+      "Belgium",
+      "Benelux",
+      2015,
+      654213
+    ],
+    [
+      "993302",
+      "Conworxx GmbH",
+      "Germany",
+      "Central Europe",
+      2015,
+      1357
+    ],
+    [
+      "993116",
+      "Little Britain",
+      "Germany",
+      "Central Europe",
+      2015,
+      1024
+    ],
+    [
+      "992762",
+      "Rudolf Ammersin GesmbH",
+      "Austria",
+      "Central Europe",
+      2015,
+      2377
+    ],
+    [
+      "993114",
+      "City Super Shanghai Trading Limited",
+      "China",
+      "East Asia",
+      2015,
+      19750
+    ],
+    [
+      "425257",
+      "PARKnSHOP A Division of PARKnSHOP (HK)",
+      "Hong Kong",
+      "East Asia",
+      2015,
+      604925
+    ],
+    [
+      "993199",
+      "Lengo Group - KMY",
+      "Albania",
+      "Eastern Europe",
+      2015,
+      107147
+    ],
+    [
+      "992255",
+      "Scotts Limited",
+      "Malta",
+      "Eastern Mediterranean",
+      2015,
+      553186
+    ],
+    [
+      "992586",
+      "Dega S.R.L.",
+      "Italy",
+      "France & Italy",
+      2015,
+      8310
+    ],
+    [
+      "992546",
+      "Kennedy (UK) Ltd",
+      "France",
+      "France & Italy",
+      2015,
+      5190
+    ],
+    [
+      "993142",
+      "Q&K ConfiserieEU",
+      "France",
+      "France & Italy",
+      2015,
+      10809
+    ],
+    [
+      "992752",
+      "Costa del Sol Balear Euro",
+      "Spain",
+      "Iberia",
+      2015,
+      21644
+    ],
+    [
+      "993230",
+      "Musgrave España, S.A.",
+      "Spain",
+      "Iberia",
+      2015,
+      39611
+    ],
+    [
+      "457639",
+      "Supermercado Costablanca SL",
+      "Spain",
+      "Iberia",
+      2015,
+      33422
+    ],
+    [
+      "992915",
+      "Shah United T/A Bonfect",
+      "Australia",
+      "Oceania/Pacific",
+      2015,
+      135991
+    ],
+    [
+      "992677",
+      "Normal A/S",
+      "Denmark",
+      "Scandinavia",
+      2015,
+      414663
+    ],
+    [
+      "992768",
+      "City Gourmet Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2015,
+      46104
+    ],
+    [
+      "457784",
+      "MEIDI-YA SINGAPORE CO (PTE) LTD",
+      "Singapore",
+      "South-East Asia",
+      2015,
+      273304
+    ],
+    [
+      "457540",
+      "Temooljee & Co Ltd",
+      "Seychelles",
+      "Anglophone Africa",
+      2016,
+      106867
+    ],
+    [
+      "992021",
+      "J Delgado t/a Socas Distribuciones",
+      "Canary Islands",
+      "Atlantic Islands",
+      2016,
+      20256
+    ],
+    [
+      "993240",
+      "Overseas Imports SL Wholesale",
+      "Canary Islands",
+      "Atlantic Islands",
+      2016,
+      101147
+    ],
+    [
+      "992151",
+      "B&S Global Food Purchase B.V.",
+      "Netherlands",
+      "Benelux",
+      2016,
+      2026
+    ],
+    [
+      "992960",
+      "Goedert Remich",
+      "Luxembourg",
+      "Benelux",
+      2016,
+      5218
+    ],
+    [
+      "992568",
+      "Pall Center",
+      "Luxembourg",
+      "Benelux",
+      2016,
+      4825
+    ],
+    [
+      "993348",
+      "Slik Brothers Bleiswijk BV",
+      "Netherlands",
+      "Benelux",
+      2016,
+      10818
+    ],
+    [
+      "992778",
+      "Stonemanor",
+      "Belgium",
+      "Benelux",
+      2016,
+      729440
+    ],
+    [
+      "457970",
+      "Universal Concept sprl",
+      "Belgium",
+      "Benelux",
+      2016,
+      235932
+    ],
+    [
+      "425432",
+      "Kirk Supermarket Ltd",
+      "Cayman Islands",
+      "Caribbean",
+      2016,
+      236590
+    ],
+    [
+      "993302",
+      "Conworxx GmbH",
+      "Germany",
+      "Central Europe",
+      2016,
+      1464
+    ],
+    [
+      "425197",
+      "John Szewczuk GmbH *** DO NOT USE ***",
+      "Austria",
+      "Central Europe",
+      2016,
+      67167
+    ],
+    [
+      "993116",
+      "Little Britain",
+      "Germany",
+      "Central Europe",
+      2016,
+      1112
+    ],
+    [
+      "992762",
+      "Rudolf Ammersin GesmbH",
+      "Austria",
+      "Central Europe",
+      2016,
+      2303
+    ],
+    [
+      "993268",
+      "The Link EU",
+      "Germany",
+      "Central Europe",
+      2016,
+      99965
+    ],
+    [
+      "993114",
+      "City Super Shanghai Trading Limited",
+      "China",
+      "East Asia",
+      2016,
+      19533
+    ],
+    [
+      "425257",
+      "PARKnSHOP A Division of PARKnSHOP (HK)",
+      "Hong Kong",
+      "East Asia",
+      2016,
+      620375
+    ],
+    [
+      "993199",
+      "Lengo Group - KMY",
+      "Albania",
+      "Eastern Europe",
+      2016,
+      117103
+    ],
+    [
+      "992558",
+      "WALDEN FARMS KORNELIA WARDA-PONIECKA",
+      "Poland",
+      "Eastern Europe",
+      2016,
+      46471
+    ],
+    [
+      "992255",
+      "Scotts Limited",
+      "Malta",
+      "Eastern Mediterranean",
+      2016,
+      617014
+    ],
+    [
+      "992586",
+      "Dega S.R.L.",
+      "Italy",
+      "France & Italy",
+      2016,
+      9244
+    ],
+    [
+      "993197",
+      "Hurrykeep Ltd T/A Geoffrey's of London",
+      "France",
+      "France & Italy",
+      2016,
+      125392
+    ],
+    [
+      "992546",
+      "Kennedy (UK) Ltd",
+      "France",
+      "France & Italy",
+      2016,
+      5606
+    ],
+    [
+      "993142",
+      "Q&K ConfiserieEU",
+      "France",
+      "France & Italy",
+      2016,
+      12968
+    ],
+    [
+      "992617",
+      "Y International (UK) Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2016,
+      528211
+    ],
+    [
+      "457794",
+      "Apolonia Supermercados S.A.",
+      "Portugal",
+      "Iberia",
+      2016,
+      894119
+    ],
+    [
+      "992728",
+      "Carlos Rivero X1688240V",
+      "Spain",
+      "Iberia",
+      2016,
+      17469
+    ],
+    [
+      "992752",
+      "Costa del Sol Balear Euro",
+      "Spain",
+      "Iberia",
+      2016,
+      26809
+    ],
+    [
+      "993230",
+      "Musgrave España, S.A.",
+      "Spain",
+      "Iberia",
+      2016,
+      45486
+    ],
+    [
+      "992103",
+      "Overseas Imports SL - Benidorm",
+      "Spain",
+      "Iberia",
+      2016,
+      75928
+    ],
+    [
+      "992986",
+      "Sensationlicious Unipessoal Lda EU",
+      "Portugal",
+      "Iberia",
+      2016,
+      25142
+    ],
+    [
+      "457639",
+      "Supermercado Costablanca SL",
+      "Spain",
+      "Iberia",
+      2016,
+      36990
+    ],
+    [
+      "425084",
+      "Taste of America",
+      "Spain",
+      "Iberia",
+      2016,
+      83109
+    ],
+    [
+      "992454",
+      "Tindale & Stanton",
+      "Spain",
+      "Iberia",
+      2016,
+      22713
+    ],
+    [
+      "457782",
+      "White Island Corner Shop",
+      "Spain",
+      "Iberia",
+      2016,
+      5680
+    ],
+    [
+      "992978",
+      "Al Meera Markets SAOC",
+      "Oman",
+      "Middle East",
+      2016,
+      41009
+    ],
+    [
+      "993176",
+      "FLEMINGO ENTERPRIZES FZCO",
+      "United Arab Emirates",
+      "Middle East",
+      2016,
+      10536
+    ],
+    [
+      "993216",
+      "Ackroyd's Scottish Bakery",
+      "United States of America",
+      "North America",
+      2016,
+      21137
+    ],
+    [
+      "425373",
+      "British Delights Ltd",
+      "United States of America",
+      "North America",
+      2016,
+      73861
+    ],
+    [
+      "425169",
+      "Scottish Loft",
+      "Canada",
+      "North America",
+      2016,
+      11422
+    ],
+    [
+      "992448",
+      "Sobeys Capital Inc.",
+      "Canada",
+      "North America",
+      2016,
+      82696
+    ],
+    [
+      "992669",
+      "The British Food Depot LLC",
+      "United States of America",
+      "North America",
+      2016,
+      131554
+    ],
+    [
+      "992945",
+      "Candy Time Pty Ltd",
+      "Australia",
+      "Oceania/Pacific",
+      2016,
+      106544
+    ],
+    [
+      "992915",
+      "Shah United T/A Bonfect",
+      "Australia",
+      "Oceania/Pacific",
+      2016,
+      143889
+    ],
+    [
+      "992677",
+      "Normal A/S",
+      "Denmark",
+      "Scandinavia",
+      2016,
+      518459
+    ],
+    [
+      "457767",
+      "Oluf Lorentzen AS",
+      "Norway",
+      "Scandinavia",
+      2016,
+      59828
+    ],
+    [
+      "993223",
+      "D.Watson Chemists",
+      "Pakistan",
+      "South Asia",
+      2016,
+      22058
+    ],
+    [
+      "992768",
+      "City Gourmet Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2016,
+      54102
+    ],
+    [
+      "457784",
+      "MEIDI-YA SINGAPORE CO (PTE) LTD",
+      "Singapore",
+      "South-East Asia",
+      2016,
+      266431
+    ],
+    [
+      "457946",
+      "Roma Fruits of Nature",
+      "Nigeria",
+      "Anglophone Africa",
+      2017,
+      4046
+    ],
+    [
+      "457540",
+      "Temooljee & Co Ltd",
+      "Seychelles",
+      "Anglophone Africa",
+      2017,
+      124848
+    ],
+    [
+      "992565",
+      "Village Supermarket Ltd",
+      "Tanzania",
+      "Anglophone Africa",
+      2017,
+      123754
+    ],
+    [
+      "992021",
+      "J Delgado t/a Socas Distribuciones",
+      "Canary Islands",
+      "Atlantic Islands",
+      2017,
+      22577
+    ],
+    [
+      "993240",
+      "Overseas Imports SL Wholesale",
+      "Canary Islands",
+      "Atlantic Islands",
+      2017,
+      100827
+    ],
+    [
+      "992151",
+      "B&S Global Food Purchase B.V.",
+      "Netherlands",
+      "Benelux",
+      2017,
+      2256
+    ],
+    [
+      "992960",
+      "Goedert Remich",
+      "Luxembourg",
+      "Benelux",
+      2017,
+      5919
+    ],
+    [
+      "992568",
+      "Pall Center",
+      "Luxembourg",
+      "Benelux",
+      2017,
+      5166
+    ],
+    [
+      "993348",
+      "Slik Brothers Bleiswijk BV",
+      "Netherlands",
+      "Benelux",
+      2017,
+      12525
+    ],
+    [
+      "992778",
+      "Stonemanor",
+      "Belgium",
+      "Benelux",
+      2017,
+      736260
+    ],
+    [
+      "457970",
+      "Universal Concept sprl",
+      "Belgium",
+      "Benelux",
+      2017,
+      235095
+    ],
+    [
+      "457532",
+      "Wonderfood SPRL",
+      "Belgium",
+      "Benelux",
+      2017,
+      174354
+    ],
+    [
+      "425432",
+      "Kirk Supermarket Ltd",
+      "Cayman Islands",
+      "Caribbean",
+      2017,
+      298475
+    ],
+    [
+      "457726",
+      "BritShop GmbH",
+      "Switzerland",
+      "Central Europe",
+      2017,
+      177228
+    ],
+    [
+      "425094",
+      "Broken English",
+      "Germany",
+      "Central Europe",
+      2017,
+      25827
+    ],
+    [
+      "993302",
+      "Conworxx GmbH",
+      "Germany",
+      "Central Europe",
+      2017,
+      1627
+    ],
+    [
+      "425197",
+      "John Szewczuk GmbH *** DO NOT USE ***",
+      "Austria",
+      "Central Europe",
+      2017,
+      82055
+    ],
+    [
+      "993282",
+      "LETS GmbH",
+      "Germany",
+      "Central Europe",
+      2017,
+      29346
+    ],
+    [
+      "993116",
+      "Little Britain",
+      "Germany",
+      "Central Europe",
+      2017,
+      1440
+    ],
+    [
+      "992762",
+      "Rudolf Ammersin GesmbH",
+      "Austria",
+      "Central Europe",
+      2017,
+      2830
+    ],
+    [
+      "993268",
+      "The Link EU",
+      "Germany",
+      "Central Europe",
+      2017,
+      106538
+    ],
+    [
+      "993114",
+      "City Super Shanghai Trading Limited",
+      "China",
+      "East Asia",
+      2017,
+      22839
+    ],
+    [
+      "425257",
+      "PARKnSHOP A Division of PARKnSHOP (HK)",
+      "Hong Kong",
+      "East Asia",
+      2017,
+      768704
+    ],
+    [
+      "457523",
+      "Shanghai City Food Distribution Co Ltd",
+      "China",
+      "East Asia",
+      2017,
+      40069
+    ],
+    [
+      "992776",
+      "Yata Limited",
+      "Hong Kong",
+      "East Asia",
+      2017,
+      126436
+    ],
+    [
+      "993199",
+      "Lengo Group - KMY",
+      "Albania",
+      "Eastern Europe",
+      2017,
+      112588
+    ],
+    [
+      "993326",
+      "SIA Gemoss",
+      "Latvia",
+      "Eastern Europe",
+      2017,
+      81614
+    ],
+    [
+      "992507",
+      "SIA RSKORPIONS",
+      "Latvia",
+      "Eastern Europe",
+      2017,
+      111188
+    ],
+    [
+      "992558",
+      "WALDEN FARMS KORNELIA WARDA-PONIECKA",
+      "Poland",
+      "Eastern Europe",
+      2017,
+      59108
+    ],
+    [
+      "992255",
+      "Scotts Limited",
+      "Malta",
+      "Eastern Mediterranean",
+      2017,
+      659759
+    ],
+    [
+      "993343",
+      "American Candy Corner ***DO NOT USE***",
+      "Italy",
+      "France & Italy",
+      2017,
+      2488
+    ],
+    [
+      "457521",
+      "Brittains Home Stores",
+      "France",
+      "France & Italy",
+      2017,
+      44990
+    ],
+    [
+      "992586",
+      "Dega S.R.L.",
+      "Italy",
+      "France & Italy",
+      2017,
+      10378
+    ],
+    [
+      "993197",
+      "Hurrykeep Ltd T/A Geoffrey's of London",
+      "France",
+      "France & Italy",
+      2017,
+      140263
+    ],
+    [
+      "425497",
+      "Interpole Imp-Exp ***DO NOT USE***",
+      "France",
+      "France & Italy",
+      2017,
+      12776
+    ],
+    [
+      "992546",
+      "Kennedy (UK) Ltd",
+      "France",
+      "France & Italy",
+      2017,
+      6765
+    ],
+    [
+      "457620",
+      "Petticoat Lane",
+      "France",
+      "France & Italy",
+      2017,
+      3651
+    ],
+    [
+      "993142",
+      "Q&K ConfiserieEU",
+      "France",
+      "France & Italy",
+      2017,
+      14064
+    ],
+    [
+      "992834",
+      "Stepadis TA Super U VILLEBOIS LAVALETTE",
+      "France",
+      "France & Italy",
+      2017,
+      8608
+    ],
+    [
+      "993292",
+      "AYK Trading Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2017,
+      113253
+    ],
+    [
+      "992977",
+      "Brands Solution  Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2017,
+      61856
+    ],
+    [
+      "992617",
+      "Y International (UK) Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2017,
+      673601
+    ],
+    [
+      "457794",
+      "Apolonia Supermercados S.A.",
+      "Portugal",
+      "Iberia",
+      2017,
+      854062
+    ],
+    [
+      "992728",
+      "Carlos Rivero X1688240V",
+      "Spain",
+      "Iberia",
+      2017,
+      21072
+    ],
+    [
+      "992951",
+      "Cereal Hunters SL EU",
+      "Spain",
+      "Iberia",
+      2017,
+      42151
+    ],
+    [
+      "992701",
+      "Ciberom Vigo sl",
+      "Spain",
+      "Iberia",
+      2017,
+      52934
+    ],
+    [
+      "992752",
+      "Costa del Sol Balear Euro",
+      "Spain",
+      "Iberia",
+      2017,
+      32635
+    ],
+    [
+      "993230",
+      "Musgrave España, S.A.",
+      "Spain",
+      "Iberia",
+      2017,
+      50346
+    ],
+    [
+      "992103",
+      "Overseas Imports SL - Benidorm",
+      "Spain",
+      "Iberia",
+      2017,
+      80369
+    ],
+    [
+      "992011",
+      "Overseas Imports SL - Javea",
+      "Spain",
+      "Iberia",
+      2017,
+      196469
+    ],
+    [
+      "457763",
+      "Overseas Imports SL - Mijas",
+      "Spain",
+      "Iberia",
+      2017,
+      497023
+    ],
+    [
+      "993201",
+      "Overseas Imports SL - Portimao",
+      "Portugal",
+      "Iberia",
+      2017,
+      123983
+    ],
+    [
+      "992986",
+      "Sensationlicious Unipessoal Lda EU",
+      "Portugal",
+      "Iberia",
+      2017,
+      33304
+    ],
+    [
+      "992398",
+      "Splendour Planet Lda",
+      "Portugal",
+      "Iberia",
+      2017,
+      214049
+    ],
+    [
+      "457639",
+      "Supermercado Costablanca SL",
+      "Spain",
+      "Iberia",
+      2017,
+      43458
+    ],
+    [
+      "992284",
+      "SUPERMERCADOS VIP COMERCIO IMPORT",
+      "Portugal",
+      "Iberia",
+      2017,
+      59310
+    ],
+    [
+      "425084",
+      "Taste of America",
+      "Spain",
+      "Iberia",
+      2017,
+      85724
+    ],
+    [
+      "992454",
+      "Tindale & Stanton",
+      "Spain",
+      "Iberia",
+      2017,
+      29538
+    ],
+    [
+      "457782",
+      "White Island Corner Shop",
+      "Spain",
+      "Iberia",
+      2017,
+      5247
+    ],
+    [
+      "993344",
+      "zea retail sl - MALAGA EU",
+      "Spain",
+      "Iberia",
+      2017,
+      48599
+    ],
+    [
+      "992978",
+      "Al Meera Markets SAOC",
+      "Oman",
+      "Middle East",
+      2017,
+      49181
+    ],
+    [
+      "993176",
+      "FLEMINGO ENTERPRIZES FZCO",
+      "United Arab Emirates",
+      "Middle East",
+      2017,
+      11554
+    ],
+    [
+      "993183",
+      "International Grand Mart Supermarket -",
+      "United Arab Emirates",
+      "Middle East",
+      2017,
+      97054
+    ],
+    [
+      "993216",
+      "Ackroyd's Scottish Bakery",
+      "United States of America",
+      "North America",
+      2017,
+      23204
+    ],
+    [
+      "425373",
+      "British Delights Ltd",
+      "United States of America",
+      "North America",
+      2017,
+      75506
+    ],
+    [
+      "457531",
+      "British Food Imports / Sonrah Co",
+      "United States of America",
+      "North America",
+      2017,
+      46324
+    ],
+    [
+      "425169",
+      "Scottish Loft",
+      "Canada",
+      "North America",
+      2017,
+      12147
+    ],
+    [
+      "992966",
+      "SnackCrate, Inc.",
+      "United States of America",
+      "North America",
+      2017,
+      700656
+    ],
+    [
+      "992448",
+      "Sobeys Capital Inc.",
+      "Canada",
+      "North America",
+      2017,
+      107143
+    ],
+    [
+      "992669",
+      "The British Food Depot LLC",
+      "United States of America",
+      "North America",
+      2017,
+      145286
+    ],
+    [
+      "992945",
+      "Candy Time Pty Ltd",
+      "Australia",
+      "Oceania/Pacific",
+      2017,
+      116232
+    ],
+    [
+      "993219",
+      "David Jones Pty Limited",
+      "Australia",
+      "Oceania/Pacific",
+      2017,
+      11957
+    ],
+    [
+      "992915",
+      "Shah United T/A Bonfect",
+      "Australia",
+      "Oceania/Pacific",
+      2017,
+      185327
+    ],
+    [
+      "993396",
+      "Landshandilin",
+      "Faroe Islands",
+      "Scandinavia",
+      2017,
+      46293
+    ],
+    [
+      "992677",
+      "Normal A/S",
+      "Denmark",
+      "Scandinavia",
+      2017,
+      506024
+    ],
+    [
+      "457767",
+      "Oluf Lorentzen AS",
+      "Norway",
+      "Scandinavia",
+      2017,
+      59906
+    ],
+    [
+      "993223",
+      "D.Watson Chemists",
+      "Pakistan",
+      "South Asia",
+      2017,
+      27244
+    ],
+    [
+      "992768",
+      "City Gourmet Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2017,
+      56617
+    ],
+    [
+      "457784",
+      "MEIDI-YA SINGAPORE CO (PTE) LTD",
+      "Singapore",
+      "South-East Asia",
+      2017,
+      285799
+    ],
+    [
+      "992722",
+      "RedMart Private  Ltd",
+      "Singapore",
+      "South-East Asia",
+      2017,
+      2626028
+    ],
+    [
+      "992192",
+      "Smart Product Co.,Ltd",
+      "Thailand",
+      "South-East Asia",
+      2017,
+      347803
+    ],
+    [
+      "993334",
+      "TFP Retail Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2017,
+      355090
+    ],
+    [
+      "457946",
+      "Roma Fruits of Nature",
+      "Nigeria",
+      "Anglophone Africa",
+      2018,
+      5103
+    ],
+    [
+      "457540",
+      "Temooljee & Co Ltd",
+      "Seychelles",
+      "Anglophone Africa",
+      2018,
+      148972
+    ],
+    [
+      "992565",
+      "Village Supermarket Ltd",
+      "Tanzania",
+      "Anglophone Africa",
+      2018,
+      122189
+    ],
+    [
+      "992021",
+      "J Delgado t/a Socas Distribuciones",
+      "Canary Islands",
+      "Atlantic Islands",
+      2018,
+      26685
+    ],
+    [
+      "993240",
+      "Overseas Imports SL Wholesale",
+      "Canary Islands",
+      "Atlantic Islands",
+      2018,
+      129587
+    ],
+    [
+      "992151",
+      "B&S Global Food Purchase B.V.",
+      "Netherlands",
+      "Benelux",
+      2018,
+      2607
+    ],
+    [
+      "992960",
+      "Goedert Remich",
+      "Luxembourg",
+      "Benelux",
+      2018,
+      6581
+    ],
+    [
+      "992568",
+      "Pall Center",
+      "Luxembourg",
+      "Benelux",
+      2018,
+      6246
+    ],
+    [
+      "993348",
+      "Slik Brothers Bleiswijk BV",
+      "Netherlands",
+      "Benelux",
+      2018,
+      14762
+    ],
+    [
+      "992778",
+      "Stonemanor",
+      "Belgium",
+      "Benelux",
+      2018,
+      834734
+    ],
+    [
+      "457970",
+      "Universal Concept sprl",
+      "Belgium",
+      "Benelux",
+      2018,
+      320636
+    ],
+    [
+      "457532",
+      "Wonderfood SPRL",
+      "Belgium",
+      "Benelux",
+      2018,
+      211293
+    ],
+    [
+      "425432",
+      "Kirk Supermarket Ltd",
+      "Cayman Islands",
+      "Caribbean",
+      2018,
+      310517
+    ],
+    [
+      "457726",
+      "BritShop GmbH",
+      "Switzerland",
+      "Central Europe",
+      2018,
+      202589
+    ],
+    [
+      "425094",
+      "Broken English",
+      "Germany",
+      "Central Europe",
+      2018,
+      28788
+    ],
+    [
+      "993302",
+      "Conworxx GmbH",
+      "Germany",
+      "Central Europe",
+      2018,
+      1535
+    ],
+    [
+      "425197",
+      "John Szewczuk GmbH *** DO NOT USE ***",
+      "Austria",
+      "Central Europe",
+      2018,
+      85557
+    ],
+    [
+      "993282",
+      "LETS GmbH",
+      "Germany",
+      "Central Europe",
+      2018,
+      32288
+    ],
+    [
+      "993116",
+      "Little Britain",
+      "Germany",
+      "Central Europe",
+      2018,
+      1632
+    ],
+    [
+      "992762",
+      "Rudolf Ammersin GesmbH",
+      "Austria",
+      "Central Europe",
+      2018,
+      3026
+    ],
+    [
+      "993268",
+      "The Link EU",
+      "Germany",
+      "Central Europe",
+      2018,
+      123863
+    ],
+    [
+      "993114",
+      "City Super Shanghai Trading Limited",
+      "China",
+      "East Asia",
+      2018,
+      30402
+    ],
+    [
+      "425257",
+      "PARKnSHOP A Division of PARKnSHOP (HK)",
+      "Hong Kong",
+      "East Asia",
+      2018,
+      787031
+    ],
+    [
+      "457523",
+      "Shanghai City Food Distribution Co Ltd",
+      "China",
+      "East Asia",
+      2018,
+      43853
+    ],
+    [
+      "992776",
+      "Yata Limited",
+      "Hong Kong",
+      "East Asia",
+      2018,
+      130065
+    ],
+    [
+      "993199",
+      "Lengo Group - KMY",
+      "Albania",
+      "Eastern Europe",
+      2018,
+      120840
+    ],
+    [
+      "993326",
+      "SIA Gemoss",
+      "Latvia",
+      "Eastern Europe",
+      2018,
+      96943
+    ],
+    [
+      "992507",
+      "SIA RSKORPIONS",
+      "Latvia",
+      "Eastern Europe",
+      2018,
+      122726
+    ],
+    [
+      "992558",
+      "WALDEN FARMS KORNELIA WARDA-PONIECKA",
+      "Poland",
+      "Eastern Europe",
+      2018,
+      57411
+    ],
+    [
+      "992255",
+      "Scotts Limited",
+      "Malta",
+      "Eastern Mediterranean",
+      2018,
+      720647
+    ],
+    [
+      "993343",
+      "American Candy Corner ***DO NOT USE***",
+      "Italy",
+      "France & Italy",
+      2018,
+      2631
+    ],
+    [
+      "457521",
+      "Brittains Home Stores",
+      "France",
+      "France & Italy",
+      2018,
+      44208
+    ],
+    [
+      "992586",
+      "Dega S.R.L.",
+      "Italy",
+      "France & Italy",
+      2018,
+      11759
+    ],
+    [
+      "993197",
+      "Hurrykeep Ltd T/A Geoffrey's of London",
+      "France",
+      "France & Italy",
+      2018,
+      170330
+    ],
+    [
+      "425497",
+      "Interpole Imp-Exp ***DO NOT USE***",
+      "France",
+      "France & Italy",
+      2018,
+      15026
+    ],
+    [
+      "992546",
+      "Kennedy (UK) Ltd",
+      "France",
+      "France & Italy",
+      2018,
+      7945
+    ],
+    [
+      "457620",
+      "Petticoat Lane",
+      "France",
+      "France & Italy",
+      2018,
+      4105
+    ],
+    [
+      "993142",
+      "Q&K ConfiserieEU",
+      "France",
+      "France & Italy",
+      2018,
+      16205
+    ],
+    [
+      "992834",
+      "Stepadis TA Super U VILLEBOIS LAVALETTE",
+      "France",
+      "France & Italy",
+      2018,
+      10774
+    ],
+    [
+      "993292",
+      "AYK Trading Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2018,
+      121066
+    ],
+    [
+      "992977",
+      "Brands Solution  Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2018,
+      57819
+    ],
+    [
+      "992617",
+      "Y International (UK) Ltd",
+      "United Kingdom",
+      "GB/Ireland",
+      2018,
+      647464
+    ],
+    [
+      "457794",
+      "Apolonia Supermercados S.A.",
+      "Portugal",
+      "Iberia",
+      2018,
+      1106576
+    ],
+    [
+      "992728",
+      "Carlos Rivero X1688240V",
+      "Spain",
+      "Iberia",
+      2018,
+      22647
+    ],
+    [
+      "992951",
+      "Cereal Hunters SL EU",
+      "Spain",
+      "Iberia",
+      2018,
+      46347
+    ],
+    [
+      "992701",
+      "Ciberom Vigo sl",
+      "Spain",
+      "Iberia",
+      2018,
+      50492
+    ],
+    [
+      "992752",
+      "Costa del Sol Balear Euro",
+      "Spain",
+      "Iberia",
+      2018,
+      34298
+    ],
+    [
+      "993230",
+      "Musgrave España, S.A.",
+      "Spain",
+      "Iberia",
+      2018,
+      63069
+    ],
+    [
+      "992103",
+      "Overseas Imports SL - Benidorm",
+      "Spain",
+      "Iberia",
+      2018,
+      98635
+    ],
+    [
+      "992011",
+      "Overseas Imports SL - Javea",
+      "Spain",
+      "Iberia",
+      2018,
+      225130
+    ],
+    [
+      "457763",
+      "Overseas Imports SL - Mijas",
+      "Spain",
+      "Iberia",
+      2018,
+      545546
+    ],
+    [
+      "993201",
+      "Overseas Imports SL - Portimao",
+      "Portugal",
+      "Iberia",
+      2018,
+      143995
+    ],
+    [
+      "992986",
+      "Sensationlicious Unipessoal Lda EU",
+      "Portugal",
+      "Iberia",
+      2018,
+      31845
+    ],
+    [
+      "992398",
+      "Splendour Planet Lda",
+      "Portugal",
+      "Iberia",
+      2018,
+      267565
+    ],
+    [
+      "457639",
+      "Supermercado Costablanca SL",
+      "Spain",
+      "Iberia",
+      2018,
+      43698
+    ],
+    [
+      "992284",
+      "SUPERMERCADOS VIP COMERCIO IMPORT",
+      "Portugal",
+      "Iberia",
+      2018,
+      65359
+    ],
+    [
+      "425084",
+      "Taste of America",
+      "Spain",
+      "Iberia",
+      2018,
+      92286
+    ],
+    [
+      "992454",
+      "Tindale & Stanton",
+      "Spain",
+      "Iberia",
+      2018,
+      28500
+    ],
+    [
+      "457782",
+      "White Island Corner Shop",
+      "Spain",
+      "Iberia",
+      2018,
+      6516
+    ],
+    [
+      "993344",
+      "zea retail sl - MALAGA EU",
+      "Spain",
+      "Iberia",
+      2018,
+      52476
+    ],
+    [
+      "992978",
+      "Al Meera Markets SAOC",
+      "Oman",
+      "Middle East",
+      2018,
+      57350
+    ],
+    [
+      "993176",
+      "FLEMINGO ENTERPRIZES FZCO",
+      "United Arab Emirates",
+      "Middle East",
+      2018,
+      13963
+    ],
+    [
+      "993183",
+      "International Grand Mart Supermarket -",
+      "United Arab Emirates",
+      "Middle East",
+      2018,
+      116816
+    ],
+    [
+      "993216",
+      "Ackroyd's Scottish Bakery",
+      "United States of America",
+      "North America",
+      2018,
+      24520
+    ],
+    [
+      "425373",
+      "British Delights Ltd",
+      "United States of America",
+      "North America",
+      2018,
+      88865
+    ],
+    [
+      "457531",
+      "British Food Imports / Sonrah Co",
+      "United States of America",
+      "North America",
+      2018,
+      51538
+    ],
+    [
+      "425169",
+      "Scottish Loft",
+      "Canada",
+      "North America",
+      2018,
+      13167
+    ],
+    [
+      "992966",
+      "SnackCrate, Inc.",
+      "United States of America",
+      "North America",
+      2018,
+      827365
+    ],
+    [
+      "992448",
+      "Sobeys Capital Inc.",
+      "Canada",
+      "North America",
+      2018,
+      109604
+    ],
+    [
+      "992669",
+      "The British Food Depot LLC",
+      "United States of America",
+      "North America",
+      2018,
+      165682
+    ],
+    [
+      "992945",
+      "Candy Time Pty Ltd",
+      "Australia",
+      "Oceania/Pacific",
+      2018,
+      136060
+    ],
+    [
+      "993219",
+      "David Jones Pty Limited",
+      "Australia",
+      "Oceania/Pacific",
+      2018,
+      12655
+    ],
+    [
+      "992915",
+      "Shah United T/A Bonfect",
+      "Australia",
+      "Oceania/Pacific",
+      2018,
+      221654
+    ],
+    [
+      "993396",
+      "Landshandilin",
+      "Faroe Islands",
+      "Scandinavia",
+      2018,
+      49417
+    ],
+    [
+      "992677",
+      "Normal A/S",
+      "Denmark",
+      "Scandinavia",
+      2018,
+      678130
+    ],
+    [
+      "457767",
+      "Oluf Lorentzen AS",
+      "Norway",
+      "Scandinavia",
+      2018,
+      69006
+    ],
+    [
+      "993223",
+      "D.Watson Chemists",
+      "Pakistan",
+      "South Asia",
+      2018,
+      27404
+    ],
+    [
+      "992768",
+      "City Gourmet Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2018,
+      56583
+    ],
+    [
+      "457784",
+      "MEIDI-YA SINGAPORE CO (PTE) LTD",
+      "Singapore",
+      "South-East Asia",
+      2018,
+      352238
+    ],
+    [
+      "992722",
+      "RedMart Private  Ltd",
+      "Singapore",
+      "South-East Asia",
+      2018,
+      2547009
+    ],
+    [
+      "992192",
+      "Smart Product Co.,Ltd",
+      "Thailand",
+      "South-East Asia",
+      2018,
+      389938
+    ],
+    [
+      "993334",
+      "TFP Retail Sdn Bhd",
+      "Malaysia",
+      "South-East Asia",
+      2018,
+      390048
+    ]
+  ]
+}
